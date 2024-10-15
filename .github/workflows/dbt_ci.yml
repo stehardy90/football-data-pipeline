@@ -33,13 +33,18 @@ jobs:
         echo $GOOGLE_APPLICATION_CREDENTIALS > /tmp/gcp_credentials.json
         export GOOGLE_APPLICATION_CREDENTIALS="/tmp/gcp_credentials.json"
 
+    - name: Set up dbt profile
+      run: |
+        mkdir -p ~/.dbt
+        cp config/dbt/profiles.yml ~/.dbt/profiles.yml  # Copy profiles.yml to the default dbt location
+
     - name: Run dbt models
       run: |
         dbt deps  # Install dbt packages
-        dbt run --profiles-dir ../config/dbt  # Run the dbt models
+        dbt run
       working-directory: ./src/transform  
 
     - name: Run dbt tests
       run: |
-        dbt test --profiles-dir ../config/dbt  # Run the dbt tests
+        dbt test
       working-directory: ./src/transform  
