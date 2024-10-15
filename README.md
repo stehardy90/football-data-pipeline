@@ -29,7 +29,6 @@ This project implements a data pipeline that ingests, processes, and prepares fo
 ├── src/
 │   ├── dags/                   # Airflow DAGs for orchestration
 │   ├── transform/              # dbt models for data transformations
-│   ├── logs/                   # Logs (excluded from version control)
 │   └── scripts/                # Custom Python scripts for API data ingestion
 ├── docker/                     # Docker environment setup
 │   ├── .env                    # Docker environment variables (excluded)
