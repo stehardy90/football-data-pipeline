@@ -1,0 +1,99 @@
+# Basic testing for staging tables to ensure all PKs are unique and not null
+
+models:
+  - name: stg_coaches
+    description: "Staging table for coaches"
+    columns:
+      - name: coach_id
+        tests:
+          - unique
+          - not_null
+      
+  - name: stg_competitions
+    description: "Staging table for competitions"
+    columns:
+      - name: competition_id
+        tests:
+          - unique
+          - not_null
+      
+  - name: stg_areas
+    description: "Staging table for areas"
+    columns:
+      - name: area_code
+        tests:
+          - not_null
+          - unique 
+         
+  - name: stg_matches
+    description: "Staging table for matches"
+    columns:
+      - name: match_id
+        tests:
+          - not_null
+          - unique 
+          
+  - name: stg_players
+    description: "Staging table for players"
+    columns:
+      - name: player_id
+        tests:
+          - not_null
+          - unique 
+
+  - name: stg_referees
+    description: "Staging table for referees"
+    columns:
+      - name: referee_id
+        tests:
+          - not_null
+          - unique 
+
+  - name: stg_seasons
+    description: "Staging table for seasons"
+    columns:
+      - name: season_id
+        tests:
+          - not_null
+          - unique      
+
+  - name: stg_standings
+    description: "Staging table for standings"
+    columns:
+      - name: position
+        tests:
+          - not_null
+      - name: team_id
+        tests:
+          - not_null
+          - unique      
+
+  - name: stg_teams
+    description: "Staging table for teams"
+    columns:
+      - name: team_id
+        tests:
+          - not_null
+          - unique               
+          
+  - name: stg_scorers
+    description: "Staging table for scorers"
+    columns:
+      - name: player_id
+        tests:
+          - not_null
+          - unique   
+      - name: team_id
+        tests:
+          - not_null
+          - unique  
+      - name: competition_id
+        tests:
+          - not_null
+          - unique  
+      - name: season_id
+        tests:
+          - not_null
+          - unique            
+
+

@@ -1,0 +1,28 @@
+# Configuration files containing sensitive information
+docker/.env  # Docker-specific environment variables
+
+# User-specific files
+src/transform/.user.yml  # dbt user-specific settings
+
+# Node.js package lock (if used, but depends on the nature of dbt setup)
+src/transform/package-lock.yml
+
+# Automatically generated files
+src/transform/logs/  # dbt logs
+src/transform/target/  # dbt build artifacts
+src/transform/.dbt/  # dbt cache files (if present)
+src/dags/__pycache__/  # Python cache files
+
+# Python cache files
+*.pyc
+__pycache__/
+
+# dbt compiled files
+src/transform/target/
+
+# System-specific files
+.DS_Store  # MacOS-specific system file
+Thumbs.db  # Windows-specific system file
+
+
+src/dags/logs/

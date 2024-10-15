@@ -1,0 +1,41 @@
+# Naming the project
+name: 'football_data_pipeline'
+version: '1.0.0'
+
+# Specifying the profile
+profile: 'football_data_pipeline'
+
+# Configuring paths for different dbt artifacts
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+# Clean targets
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# Model configurations for different layers
+models:
+  football_data_pipeline:
+    
+    # Specify the transform directory and set the schema to football_data_transform
+    silver:
+      +schema: "silver"  # Transform layer
+      +materialized: table  # materializing as a table
+      
+    gold:
+      +schema: "gold"  # Aggregate layer
+      +materialized: table  # materializing as a table
+      
+    analytics:
+      +schema: "analytics"  # Analytics layer
+      +materialized: view   # materializing as a view
+
+snapshots:
+  football_data_pipeline:
+    +schema: "snapshot"  # The schema where the snapshot table will be stored
+    +database: football_data_pipeline  # The BigQuery project ID

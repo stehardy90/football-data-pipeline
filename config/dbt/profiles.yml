@@ -1,0 +1,14 @@
+football_data_pipeline:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: service-account
+      project: "football-data-pipeline"
+      dataset: "football_data"
+      keyfile: "{{ env_var('DOCKER_GOOGLE_APPLICATION_CREDENTIALS') }}" 
+      timeout_seconds: 300
+      location: "EU"
+      threads: 4
+      priority: interactive
+      dialect: standard

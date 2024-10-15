@@ -1,0 +1,323 @@
+#version: 2
+
+models:
+  - name: dim_areas
+    description: "dim table for areas"
+    columns:
+      - name: area_code
+        tests:
+          - not_null
+          - unique 
+      - name: area_name
+        tests:
+          - not_null
+      - name: loaded_date
+        tests:
+          - not_null  
+  
+  
+  - name: dim_coaches
+    description: "Dimension table for coaches"
+    columns:
+      - name: coach_id
+        description: "Unique ID for coaches"
+        tests:
+          - unique
+          - not_null
+      - name: coach_name
+        description: "Name of the coach"
+        tests:
+          - not_null
+      - name: date_of_birth
+        description: "The coaches date of birth"
+        tests:
+          - not_null
+      - name: nationality
+        description: "Nationality of the coach"
+        tests:
+          - not_null
+      - name: contract_start
+        description: "Contract start date for the coach"
+        tests:
+          - not_null
+      - name: contract_until
+        description: "Contract end date for the coach"
+        tests:
+          - not_null
+      - name: team_id
+        description: "Team the coach belongs to"
+        tests:
+          - not_null
+      - name: loaded_date
+        tests:
+          - not_null          
+
+    # Custom tests
+    tests:
+      - contract_start_before_end # Ensure the contract start date is earlier than the contract end date
+      
+  - name: dim_competitions
+    description: "dim table for competitions"
+    columns:
+      - name: competition_id
+        tests:
+          - not_null
+          - unique 
+      - name: code
+        tests:
+          - not_null
+      - name: type
+        tests:
+          - not_null  
+      - name: area_code
+        tests:
+          - not_null  
+      - name: loaded_date
+        tests:
+          - not_null  
+          
+  - name: dim_dates
+    description: "dim table for dates"
+    columns:
+      - name: date
+        tests:
+          - not_null
+          - unique 
+      - name: year
+        tests:
+          - not_null
+      - name: month
+        tests:
+          - not_null  
+          - custom_accepted_values:
+              values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]  # Pass integers
+      - name: day_of_month
+        tests:
+          - not_null  
+      - name: week
+        tests:
+          - not_null
+      - name: day_of_week
+        tests:
+          - not_null  
+          - custom_accepted_values:
+              values: [1, 2, 3, 4, 5, 6, 7]  # Pass integers
+      - name: quarter
+        tests:
+          - not_null  
+          - custom_accepted_values:
+              values: [1, 2, 3, 4]  # Pass integers
+      - name: week_start_date
+        tests:
+          - not_null  
+      - name: month_start_date
+        tests:
+          - not_null     
+      
+
+  - name: dim_players
+    description: "Dimension table for players"
+    columns:
+      - name: player_id
+        description: "Unique ID for players"
+        tests:
+          - unique
+          - not_null
+      - name: player_name
+        description: "Name of the player"
+        tests:
+          - not_null 
+      - name: position
+        description: "Players main position"
+        tests:
+          - not_null
+      - name: nationality
+        description: "Players nationality"
+        tests:
+          - not_null          
+      - name: team_id
+        description: "Team the player belongs to"
+        tests:
+          - not_null
+      - name: loaded_date
+        tests:
+          - not_null
+
+    # Custom tests
+    tests:
+      - date_of_birth_more_than_10_years_ago
+      
+  - name: dim_referees
+    description: "Dimension table for referees"
+    columns:
+      - name: referee_id
+        description: "Unique ID for referees"
+        tests:
+          - unique
+          - not_null
+      - name: referee_name
+        description: "Name of the referee"
+        tests:
+          - not_null 
+      - name: nationality
+        description: "Referees nationality"
+        tests:
+          - not_null
+      - name: loaded_date
+        tests:
+          - not_null          
+
+  - name: dim_seasons
+    description: "Dimension table for seasons"
+    columns:
+      - name: season_id
+        description: "Unique ID for seasons"
+        tests:
+          - unique
+          - not_null
+      - name: season_start_date
+        description: "Start date for the season"
+        tests:
+          - not_null
+      - name: season_end_date
+        description: "End date for the season"
+        tests:
+          - not_null
+      - name: competition_id
+        tests:
+          - not_null
+      - name: loaded_date
+        tests:
+          - not_null
+
+    # Custom tests
+    tests:
+      - season_start_before_end
+
+  - name: fact_matches
+    description: "Fact table for matches"
+    columns:
+      - name: match_id
+        description: "Unique ID for matches"
+        tests:
+          - unique
+          - not_null
+      - name: home_team_id
+        description: "Home team ID"
+        tests:
+          - not_null
+      - name: away_team_id
+        description: "Away team ID"
+        tests:
+          - not_null
+      - name: score_home
+        tests:
+          - not_null 
+      - name: score_away
+        tests:
+          - not_null 
+      - name: half_time_home
+        tests:
+          - not_null 
+      - name: half_time_away
+        tests:
+          - not_null 
+      - name: match_status
+        tests:
+          - not_null 
+      - name: match_day
+        tests:
+          - not_null 
+      - name: competition_id
+        description: "Competition the match belongs to"
+        tests:
+          - not_null
+      - name: season_id
+        tests:
+          - not_null 
+      - name: referee_id
+        tests:
+          - not_null 
+      - name: loaded_date
+        tests:
+          - not_null 
+
+    # Custom tests
+    tests:
+      - half_time_score_valid
+
+  - name: fact_standings
+    description: "Fact table for team standings"
+    columns:
+      - name: team_id
+        tests:
+          - not_null
+          - unique
+      - name: position
+        tests:
+          - not_null
+          - unique
+      - name: won
+        tests:
+          - not_null
+      - name: drew
+        tests:
+          - not_null
+      - name: lost
+        tests:
+          - not_null
+      - name: points
+        tests:
+          - not_null
+      - name: goals_for
+        tests:
+          - not_null
+      - name: goals_against
+        tests:
+          - not_null
+      - name: goal_difference
+        tests:
+          - not_null
+      - name: competition_id
+        tests:
+          - not_null
+      - name: season_id
+        tests:
+          - not_null
+      - name: loaded_date
+        tests:
+          - not_null
+    
+    tests:
+      - goal_difference_and_points_valid
+      
+  - name: fact_scorers
+    description: "Fact table for scorers"
+    columns:
+      - name: player_id
+        tests:
+          - not_null
+      - name: team_id
+        tests:
+          - not_null
+      - name: played_matches
+        tests:
+          - not_null
+      - name: goals
+        tests:
+          - not_null
+      - name: assists
+        tests:
+          - not_null
+      - name: penalties
+        tests:      
+          - not_null
+      - name: competition_id
+        tests:
+          - not_null
+      - name: season_id
+        tests:
+          - not_null
+      - name: current_matchday
+        tests:      
+          - not_null  
