@@ -36,7 +36,7 @@ This project implements a data pipeline that ingests, processes, and prepares fo
 ├── README.md                   # Project documentation
 ├── .gitignore                  # Ignored files and directories
 └── requirements.txt            # Python dependencies
-
+```
 
 ## 4. **Setup Instructions**
 To get the Football Data Pipeline up and running, follow these instructions to set up your environment, configure the necessary services, and run the pipeline.
