@@ -36,10 +36,10 @@ jobs:
     - name: Run dbt models
       run: |
         dbt deps  # Install dbt packages
-        dbt run --profiles-dir .  # Run the dbt models
+        dbt run --profiles-dir ./config/dbt  # Run the dbt models
       working-directory: ./src/transform  
 
     - name: Run dbt tests
       run: |
-        dbt test --profiles-dir .  # Run the dbt tests
+        dbt test --profiles-dir ./config/dbt  # Run the dbt tests
       working-directory: ./src/transform  
