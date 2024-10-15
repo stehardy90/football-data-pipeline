@@ -66,6 +66,7 @@ Download the Google Cloud Service Account key JSON file and set the path in your
 FOOTBALL_API_KEY=<Your_Football_API_Key>
 GCP_PROJECT_ID=<Your_Google_Cloud_Project_ID>
 DOCKER_GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/keyfile.json"
+```
 
 ### Set Up Docker
 - **Build Docker Containers**: Ensure Docker is installed. Navigate to your docker directory and use the following command to build and set up the containerised environment:
