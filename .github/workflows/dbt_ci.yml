@@ -28,10 +28,10 @@ jobs:
 
     - name: Set up Google Cloud Credentials
       env:
-        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        DOCKER_GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.DOCKER_GOOGLE_APPLICATION_CREDENTIALS }}
       run: |
-        echo $GOOGLE_APPLICATION_CREDENTIALS > /tmp/gcp_credentials.json
-        export GOOGLE_APPLICATION_CREDENTIALS="/tmp/gcp_credentials.json"
+        echo $DOCKER_GOOGLE_APPLICATION_CREDENTIALS > /tmp/gcp_credentials.json
+        export DOCKER_GOOGLE_APPLICATION_CREDENTIALS="/tmp/gcp_credentials.json"
 
     - name: Set up dbt profile
       run: |
