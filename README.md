@@ -6,8 +6,7 @@ This project implements a data pipeline that ingests, processes, and prepares fo
 
 - **Raw Layer (Bronze)**: Ingests raw JSON data from the API and stores it in BigQuery as is. This layer contains the untransformed data for competitions, matches, and players etc.
 - **Staging Layer (Silver)**: Cleans and structures the raw data into a more usable format. This includes tables like stg_matches, stg_scorers, and stg_teams, which prepare the data for analysis by handling data cleaning, transformations, and schema standardisation.
-- **Aggregate Layer (Gold)**: Contains fact and dimension tables ready for reporting and analysis. For example, fact_scorers aggregates player performance data, while dim_teams holds descriptive information about teams.
-- **Analytics Layer**: Business-focused views that calculate aggregated metrics such as goals per game, team performance, or player rankings over time.
+- **Aggregate Layer (Gold)**: Contains fact and dimension tables ready for reporting and analysis. In this project, reporting views that summarise or aggregate data, such as goals per game or player rankings, are also included directly within the Gold layer for simplicity. Although a separate analytics layer could be used in larger or more complex projects, this approach keeps the architecture streamlined.
 
 ## Technologies Used
 
@@ -19,9 +18,13 @@ This project implements a data pipeline that ingests, processes, and prepares fo
 
 ## Key Features
 
+- **Data Integrity with dbt Testing**: Includes both built-in and custom dbt tests to validate data quality. Tests ensure data integrity for key business metrics such as unique player IDs, non-null values for match results, and valid date ranges.
+- **Automated Orchestration with Airflow**: Apache Airflow manages the scheduling and orchestration of ingestion, transformation, and testing steps, ensuring a reliable and automated data pipeline.
 - **Incremental Loading**: Where appropriate, ingests new data only, reducing reprocessing.
 - **Historical Snapshotting**: Uses Slowly Changing Dimensions (SCD Type 2) for tracking changes in evolving data (e.g., players, scorers).
-- **Error Handling & Alerting**: Slack integration for failure notifications.
+- **Real-time Slack Notifications**: Slack integration alerts on task failures or pipeline errors, allowing for proactive monitoring and troubleshooting.
+- **Reporting Views in Gold Layer**: Reporting views, typically housed in a separate analytics layer in larger projects, are incorporated directly into the Gold layer for this project. This simplifies the architecture while still allowing for detailed business insights, such as goals per game or player performance summaries.
+
 
 ## Project Structure
 
@@ -31,7 +34,7 @@ This project implements a data pipeline that ingests, processes, and prepares fo
 │   ├── transform/              # dbt models for data transformations
 │   └── scripts/                # Custom Python scripts for API data ingestion
 ├── docker/                     # Docker environment setup
-│   ├── .env                    # Docker environment variables (excluded)
+│   └── .env                    # Docker environment variables (excluded)
 ├── README.md                   # Project documentation
 ├── .gitignore                  # Ignored files and directories
 └── requirements.txt            # Python dependencies
@@ -53,7 +56,6 @@ cd football-data-pipeline
   - *Staging (Silver) Layer*: football_data_silver
   - *Snapshots (SCD2)*: football_data_snapshot
   - *Aggregate (Gold)*: football_data_gold
-  - *Analytics*: football_data_analytics
     
 - **Enable API Access**: Ensure that BigQuery API and Cloud Storage API are enabled.
 

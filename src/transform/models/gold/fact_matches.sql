@@ -13,4 +13,4 @@ SELECT
 	referee_id,
     CURRENT_TIMESTAMP() AS loaded_date
 FROM 
-    football-data-pipeline.football_data_silver.stg_matches
+    {{ ref('stg_matches') }}

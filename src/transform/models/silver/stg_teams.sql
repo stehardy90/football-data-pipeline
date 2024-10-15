@@ -1,17 +1,17 @@
 WITH raw_teams AS (
     SELECT
-        JSON_EXTRACT_SCALAR(team_data, '$.id') AS team_id,
+        CAST(JSON_EXTRACT_SCALAR(team_data, '$.id') AS INT64) AS team_id,
         JSON_EXTRACT_SCALAR(team_data, '$.name') AS team_name,
         JSON_EXTRACT_SCALAR(team_data, '$.shortName') AS team_short_name,
         JSON_EXTRACT_SCALAR(team_data, '$.tla') AS team_abbreviation,
         JSON_EXTRACT_SCALAR(team_data, '$.crest') AS team_crest,
         JSON_EXTRACT_SCALAR(team_data, '$.address') AS team_address,
         JSON_EXTRACT_SCALAR(team_data, '$.website') AS team_website,
-        JSON_EXTRACT_SCALAR(team_data, '$.founded') AS team_founded_year,
+        CAST(JSON_EXTRACT_SCALAR(team_data, '$.founded') AS INT64) AS team_founded_year,
         JSON_EXTRACT_SCALAR(team_data, '$.clubColors') AS team_colours,
         JSON_EXTRACT_SCALAR(team_data, '$.venue') AS team_venue,
         ROW_NUMBER() OVER (PARTITION BY JSON_EXTRACT_SCALAR(team_data, '$.id') ORDER BY loaded_date DESC) AS row_num
-    FROM `football-data-pipeline.football_data_bronze.raw_football_teams`,
+    FROM `{{ var('bigquery_dataset') }}.raw_football_teams`,
     UNNEST(JSON_EXTRACT_ARRAY(raw_json, '$.teams')) AS team_data  -- Unnest the teams array
 )
 

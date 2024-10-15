@@ -10,14 +10,6 @@
     )
   }}
 
-  SELECT
-    player_id,
-	team_id,
-	player_name,
-	player_position,
-	player_date_of_birth,
-	player_nationality,
-    CURRENT_TIMESTAMP() AS loaded_date
-  FROM `football-data-pipeline.football_data_silver.stg_players`
+  SELECT * FROM {{ ref('stg_players') }}
 
 {% endsnapshot %}

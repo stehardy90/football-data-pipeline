@@ -10,11 +10,6 @@
     )
   }}
 
-  SELECT
-    area_code,
-    area_name,
-    area_flag,
-    CURRENT_TIMESTAMP() AS loaded_date
-  FROM `football-data-pipeline.football_data_silver.stg_areas`
+  SELECT * FROM {{ ref('stg_areas') }}
 
 {% endsnapshot %}

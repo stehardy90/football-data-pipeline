@@ -10,12 +10,6 @@
     )
   }}
 
-  SELECT
-    referee_id,
-	referee_name,
-	referee_type,
-	referee_nationality,
-    CURRENT_TIMESTAMP() AS loaded_date
-  FROM `football-data-pipeline.football_data_silver.stg_referees`
+  SELECT * FROM {{ ref('stg_referees') }}
 
 {% endsnapshot %}

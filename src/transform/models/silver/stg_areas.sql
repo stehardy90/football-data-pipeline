@@ -4,7 +4,7 @@ with raw_areas as (
         JSON_EXTRACT_SCALAR(raw_json, '$.area.name') AS area_name,
         JSON_EXTRACT_SCALAR(raw_json, '$.area.flag') AS area_flag,
         row_number() over (partition by JSON_EXTRACT_SCALAR(raw_json, '$.area.code') order by loaded_date desc) as row_num
-    from `football-data-pipeline.football_data_bronze.raw_football_competitions`
+    from `{{ var('bigquery_dataset') }}.raw_football_competitions`
 )
 
 select

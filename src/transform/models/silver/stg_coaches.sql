@@ -1,9 +1,9 @@
 WITH raw_coaches AS (
     SELECT
-        JSON_EXTRACT_SCALAR(team_data, '$.id') AS team_id,
-        JSON_EXTRACT_SCALAR(coach_data, '$.id') AS coach_id,
+        CAST(JSON_EXTRACT_SCALAR(team_data, '$.id') AS INT64) AS team_id,
+        CAST(JSON_EXTRACT_SCALAR(coach_data, '$.id') AS INT64) AS coach_id,
         JSON_EXTRACT_SCALAR(coach_data, '$.name') AS coach_name,
-        JSON_EXTRACT_SCALAR(coach_data, '$.dateOfBirth') AS coach_date_of_birth,
+        CAST(JSON_EXTRACT_SCALAR(coach_data, '$.dateOfBirth') AS DATE) AS coach_date_of_birth,
         JSON_EXTRACT_SCALAR(coach_data, '$.nationality') AS coach_nationality,
         
         CASE 
@@ -19,7 +19,7 @@ WITH raw_coaches AS (
         END AS coach_contract_until,
 
         ROW_NUMBER() OVER (PARTITION BY JSON_EXTRACT_SCALAR(coach_data, '$.id') ORDER BY loaded_date DESC) AS row_num
-    FROM `football-data-pipeline.football_data_bronze.raw_football_teams`,
+    FROM `{{ var('bigquery_dataset') }}.raw_football_teams`,
     UNNEST(JSON_EXTRACT_ARRAY(raw_json, '$.teams')) AS team_data,  -- Unnest the teams array first
     UNNEST([JSON_EXTRACT(team_data, '$.coach')]) AS coach_data  -- Extract the coach field from each team
 )

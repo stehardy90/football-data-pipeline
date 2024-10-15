@@ -7,20 +7,20 @@
 
 WITH raw_matches AS (
     SELECT
-        JSON_EXTRACT_SCALAR(match_data, '$.id') AS match_id,
-        JSON_EXTRACT_SCALAR(match_data, '$.homeTeam.id') AS home_team_id,
-        JSON_EXTRACT_SCALAR(match_data, '$.awayTeam.id') AS away_team_id,
-        COALESCE(JSON_EXTRACT_SCALAR(match_data, '$.score.fullTime.home'), '0') AS score_home,
-        COALESCE(JSON_EXTRACT_SCALAR(match_data, '$.score.fullTime.away'), '0') AS score_away,
-        COALESCE(JSON_EXTRACT_SCALAR(match_data, '$.score.halfTime.home'), '0') AS half_time_home,
-        COALESCE(JSON_EXTRACT_SCALAR(match_data, '$.score.halfTime.away'), '0') AS half_time_away,
+        CAST(JSON_EXTRACT_SCALAR(match_data, '$.id') AS INT64) AS match_id,
+        CAST(JSON_EXTRACT_SCALAR(match_data, '$.homeTeam.id') AS INT64) AS home_team_id,
+        CAST(JSON_EXTRACT_SCALAR(match_data, '$.awayTeam.id') AS INT64) AS away_team_id,
+        CAST(COALESCE(JSON_EXTRACT_SCALAR(match_data, '$.score.fullTime.home'), '0') AS INT64) AS score_home,
+        CAST(COALESCE(JSON_EXTRACT_SCALAR(match_data, '$.score.fullTime.away'), '0') AS INT64) AS score_away,
+        CAST(COALESCE(JSON_EXTRACT_SCALAR(match_data, '$.score.halfTime.home'), '0') AS INT64) AS half_time_home,
+        CAST(COALESCE(JSON_EXTRACT_SCALAR(match_data, '$.score.halfTime.away'), '0') AS INT64) AS half_time_away,
         JSON_EXTRACT_SCALAR(match_data, '$.status') AS match_status,
-        JSON_EXTRACT_SCALAR(match_data, '$.utcDate') AS match_day,
-        JSON_EXTRACT_SCALAR(raw_json, '$.competition.id') AS competition_id,
-        JSON_EXTRACT_SCALAR(match_data, '$.season.id') AS season_id,
-        JSON_EXTRACT_SCALAR(ref_data, '$.id') AS referee_id,
+        CAST(JSON_EXTRACT_SCALAR(match_data, '$.utcDate') AS TIMESTAMP) AS match_day,
+        CAST(JSON_EXTRACT_SCALAR(raw_json, '$.competition.id') AS INT64) AS competition_id,
+        CAST(JSON_EXTRACT_SCALAR(match_data, '$.season.id') AS INT64) AS season_id,
+        CAST(JSON_EXTRACT_SCALAR(ref_data, '$.id') AS INT64) AS referee_id,
         ROW_NUMBER() OVER (PARTITION BY JSON_EXTRACT_SCALAR(match_data, '$.id') ORDER BY loaded_date DESC) AS row_num
-    FROM `football-data-pipeline.football_data_bronze.raw_football_matches`,
+    FROM `{{ var('bigquery_dataset') }}.raw_football_matches`,
     UNNEST(JSON_EXTRACT_ARRAY(raw_json, '$.matches')) AS match_data,  
     UNNEST(JSON_EXTRACT_ARRAY(match_data, '$.referees')) AS ref_data  
 )

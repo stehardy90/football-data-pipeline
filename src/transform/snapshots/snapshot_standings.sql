@@ -10,21 +10,8 @@
     )
   }}
 
-  SELECT
-    league_position,
-	team_id,
-	played_games,
-	won,
-	draw,
-	lost,
-	points,
-	goals_for,
-	goals_against,
-	goal_difference,
-	competition_id,
-	season_id,
-    CURRENT_TIMESTAMP() AS loaded_date,
+  SELECT *,
 	CONCAT(CAST(competition_id AS STRING), '-', CAST(season_id AS STRING), '-', CAST(league_position AS STRING)) AS composite_unique_key
-  FROM `football-data-pipeline.football_data_silver.stg_standings`
+  FROM {{ ref('stg_standings') }}
 
 {% endsnapshot %}

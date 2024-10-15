@@ -17,25 +17,25 @@ snapshot-paths: ["snapshots"]
 clean-targets:
   - "target"
   - "dbt_packages"
+  
+# Defining variables for BigQuery configurations, using environment variables for flexibility
+vars:
+  bigquery_dataset: "{{ env_var('BIGQUERY_DATASET', 'default_dataset') }}"  
+  gcp_project_id: "{{ env_var('GCP_PROJECT_ID', 'default_project') }}"  
 
 # Model configurations for different layers
 models:
   football_data_pipeline:
     
-    # Specify the transform directory and set the schema to football_data_transform
     silver:
       +schema: "silver"  # Transform layer
-      +materialized: table  # materializing as a table
+      +materialized: table  
       
     gold:
-      +schema: "gold"  # Aggregate layer
-      +materialized: table  # materializing as a table
-      
-    analytics:
-      +schema: "analytics"  # Analytics layer
-      +materialized: view   # materializing as a view
+      +schema: "gold"  # Aggregate & analytics layer
+      +materialized: table  
 
 snapshots:
   football_data_pipeline:
-    +schema: "snapshot"  # The schema where the snapshot table will be stored
-    +database: football_data_pipeline  # The BigQuery project ID
+    +schema: "snapshot"  # The schema where snapshot tables will be stored
+    +database: "{{ env_var('GCP_PROJECT_ID', 'default_project') }}"  # The BigQuery project ID

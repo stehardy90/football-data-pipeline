@@ -10,14 +10,6 @@
     )
   }}
 
-  SELECT
-    competition_id,
-    competition_name,
-    competition_code,
-	competition_type,
-	competition_emblem,
-	area_code,
-    CURRENT_TIMESTAMP() AS loaded_date
-  FROM `football-data-pipeline.football_data_silver.stg_competitions`
+  SELECT * FROM {{ ref('stg_competitions') }}
 
 {% endsnapshot %}

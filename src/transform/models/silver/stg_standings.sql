@@ -1,19 +1,19 @@
 WITH standings_staging AS (
     SELECT
-        JSON_EXTRACT_SCALAR(team_data, '$.team.id') AS team_id,
-        JSON_EXTRACT_SCALAR(team_data, '$.position') AS league_position,
-        JSON_EXTRACT_SCALAR(team_data, '$.playedGames') AS played_games,
-        JSON_EXTRACT_SCALAR(team_data, '$.won') AS won,
-        JSON_EXTRACT_SCALAR(team_data, '$.draw') AS draw,
-        JSON_EXTRACT_SCALAR(team_data, '$.lost') AS lost,
-        JSON_EXTRACT_SCALAR(team_data, '$.points') AS points,
-        JSON_EXTRACT_SCALAR(team_data, '$.goalsFor') AS goals_for,
-        JSON_EXTRACT_SCALAR(team_data, '$.goalsAgainst') AS goals_against,
-        JSON_EXTRACT_SCALAR(team_data, '$.goalDifference') AS goal_difference,
-        JSON_EXTRACT_SCALAR(raw_json, '$.competition.id') AS competition_id,
-        JSON_EXTRACT_SCALAR(raw_json, '$.season.id') AS season_id,
+        CAST(JSON_EXTRACT_SCALAR(team_data, '$.team.id') AS INT64) AS team_id,
+        CAST(JSON_EXTRACT_SCALAR(team_data, '$.position') AS INT64) AS league_position,
+        CAST(JSON_EXTRACT_SCALAR(team_data, '$.playedGames') AS INT64) AS played_games,
+        CAST(JSON_EXTRACT_SCALAR(team_data, '$.won') AS INT64) AS won,
+        CAST(JSON_EXTRACT_SCALAR(team_data, '$.draw') AS INT64) AS draw,
+        CAST(JSON_EXTRACT_SCALAR(team_data, '$.lost') AS INT64) AS lost,
+        CAST(JSON_EXTRACT_SCALAR(team_data, '$.points') AS INT64) AS points,
+        CAST(JSON_EXTRACT_SCALAR(team_data, '$.goalsFor') AS INT64) AS goals_for,
+        CAST(JSON_EXTRACT_SCALAR(team_data, '$.goalsAgainst') AS INT64) AS goals_against,
+        CAST(JSON_EXTRACT_SCALAR(team_data, '$.goalDifference') AS INT64) AS goal_difference,
+        CAST(JSON_EXTRACT_SCALAR(raw_json, '$.competition.id') AS INT64) AS competition_id,
+        CAST(JSON_EXTRACT_SCALAR(raw_json, '$.season.id') AS INT64) AS season_id,
         ROW_NUMBER() OVER (PARTITION BY JSON_EXTRACT_SCALAR(team_data, '$.team.id') ORDER BY loaded_date DESC) AS row_num
-    FROM `football-data-pipeline.football_data_bronze.raw_football_standings`,
+    FROM `{{ var('bigquery_dataset') }}.raw_football_standings`,
     UNNEST(JSON_EXTRACT_ARRAY(raw_json, '$.standings')) AS standing_data,  -- Unnest standings
     UNNEST(JSON_EXTRACT_ARRAY(standing_data, '$.table')) AS team_data  -- Unnest table inside standings
 )

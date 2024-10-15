@@ -10,15 +10,6 @@
     )
   }}
 
-  SELECT
-  coach_id,
-  team_id,
-  coach_name,
-	coach_date_of_birth,
-	coach_nationality,
-	coach_contract_start,
-	coach_contract_until,
-    CURRENT_TIMESTAMP() AS loaded_date
-  FROM `football-data-pipeline.football_data_silver.stg_coaches`
+  SELECT * FROM {{ ref('stg_coaches') }}
 
 {% endsnapshot %}

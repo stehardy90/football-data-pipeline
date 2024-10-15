@@ -140,7 +140,7 @@ with DAG(
     # Task: Run dbt silver Models
     run_dbt_silver = BashOperator(
         task_id='run_dbt_silver',
-        bash_command='cd /opt/airflow/src/transform && /home/airflow/.local/bin/dbt run --models silver --profiles-dir /opt/airflow/config/dbt --no-partial-parse --debug',
+        bash_command='cd /opt/airflow/src/transform && /home/airflow/.local/bin/dbt run --models silver --exclude gold --profiles-dir /opt/airflow/config/dbt --no-partial-parse --debug',
     on_success_callback=lambda context: log_etl_run(
         context['task_instance'], 
         status='success'
@@ -152,7 +152,7 @@ with DAG(
     run_silver_dbt_tests = PythonOperator(
         task_id='run_silver_dbt_tests',
         python_callable=lambda task_instance: run_dbt_test_and_log_results(
-            task_instance, 'cd /opt/airflow/src/transform && /home/airflow/.local/bin/dbt test --models silver --profiles-dir /opt/airflow/config/dbt --no-partial-parse --debug'
+            task_instance, 'cd /opt/airflow/src/transform && /home/airflow/.local/bin/dbt test --models silver --exclude gold --profiles-dir /opt/airflow/config/dbt --no-partial-parse --debug'
         ),
         on_failure_callback=failure_callback_with_slack
     )
