@@ -12,7 +12,7 @@ load_dotenv()
 
 API_KEY = os.getenv('API_KEY')
 PROJECT_ID = os.getenv('GCP_PROJECT_ID')
-DATASET_ID = 'football_data_bronze'
+DATASET_ID = os.getenv('BIGQUERY_DATASET') 
 KEYFILE = os.getenv('DOCKER_GOOGLE_APPLICATION_CREDENTIALS')
 BIGQUERY_LOCATION = os.getenv('BIGQUERY_LOCATION', 'EU')
 BASE_URL = "https://api.football-data.org/v4"  # API base URL
@@ -22,6 +22,8 @@ API_RESOURCES = os.getenv('API_RESOURCES').split(',')
 # Check if all required environment variables are set
 if not API_KEY:
     raise ValueError("FOOTBALL_API_KEY environment variable not set.")
+if not DATASET_ID:
+    raise ValueError("DATASET_ID environment variable not set.")
 if not PROJECT_ID:
     raise ValueError("GCP_PROJECT_ID environment variable not set.")
 if not KEYFILE:

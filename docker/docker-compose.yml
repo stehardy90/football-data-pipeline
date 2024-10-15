@@ -27,7 +27,7 @@ services:
       - ../src/ingest:/opt/airflow/src/ingest
       - ../config/dbt:/opt/airflow/config/dbt
       - ../src/dags/logs:/opt/airflow/logs
-      - ${LOCAL_GOOGLE_APPLICATION_CREDENTIALS}:/opt/airflow/gcp_credentials.json
+      - ${LOCAL_GOOGLE_APPLICATION_CREDENTIALS}:${DOCKER_GOOGLE_APPLICATION_CREDENTIALS}  
     container_name: airflow-webserver
     env_file:
       - .env
@@ -47,7 +47,7 @@ services:
       - ../src/ingest:/opt/airflow/src/ingest
       - ../config/dbt:/opt/airflow/config/dbt
       - ../src/dags/logs:/opt/airflow/logs
-      - ${LOCAL_GOOGLE_APPLICATION_CREDENTIALS}:/opt/airflow/gcp_credentials.json  
+      - ${LOCAL_GOOGLE_APPLICATION_CREDENTIALS}:${DOCKER_GOOGLE_APPLICATION_CREDENTIALS}  
     container_name: airflow-scheduler
     env_file: 
       - .env
