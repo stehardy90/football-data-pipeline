@@ -100,7 +100,7 @@ jobs:
         
     - name: Print Airflow webserver logs
       working-directory: ./docker  # Ensure you are in the correct directory
-      run: docker-compose logs airflow-webserver
+      run: docker logs $(docker ps -q --filter "name=airflow-webserver")
 
     - name: Wait for Airflow health check
       run: |
