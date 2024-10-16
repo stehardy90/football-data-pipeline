@@ -26,13 +26,18 @@ jobs:
         python -m pip install --upgrade pip
         pip install dbt-core dbt-bigquery
 
+    # Write the Google Cloud credentials from the secret to a JSON file
     - name: Create Google Cloud Credentials JSON
       run: |
-        echo "${{ secrets.DOCKER_GOOGLE_APPLICATION_CREDENTIALS }}" > /tmp/gcp_credentials.json  
+        echo "${{ secrets.DOCKER_GOOGLE_APPLICATION_CREDENTIALS }}" > /tmp/gcp_credentials.json
+        ls -la /tmp/gcp_credentials.json  # Verify the file has been created
+        cat /tmp/gcp_credentials.json  # Output the content to verify it's not empty (for debugging purposes)
 
-    - name: Set up Google Cloud Credentials
+    # Check if the environment variable is set correctly
+    - name: Check Environment Variable
       run: |
         export DOCKER_GOOGLE_APPLICATION_CREDENTIALS="/tmp/gcp_credentials.json"
+        echo $DOCKER_GOOGLE_APPLICATION_CREDENTIALS  # Verify the variable is set
 
     - name: Set up dbt profile
       run: |
