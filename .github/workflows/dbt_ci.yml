@@ -84,6 +84,7 @@ jobs:
       env:
         DOCKER_GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp_credentials.json
         LOCAL_GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp_credentials.json
+      working-directory: ./docker  # Ensure you are in the correct directory
       run: |
         docker-compose up --build -d
         docker-compose ps  # Ensure the containers are in a healthy state
