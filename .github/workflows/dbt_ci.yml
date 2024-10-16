@@ -93,22 +93,24 @@ jobs:
         docker-compose up --build -d
         docker-compose ps  # Ensure the containers are in a healthy state
 
-    - name: Verify Docker Health Check
+    - name: Print Docker Compose Logs (Capture Errors Early)
       working-directory: ./docker  # Ensure you are in the correct directory
       run: |
-        docker-compose ps  
-        
-    - name: Print Airflow webserver logs
-      working-directory: ./docker  # Ensure you are in the correct directory
-      run:   docker logs airflow-webserver
-      
-    - name: Get and Print Airflow Webserver Logs by Container ID
+        docker-compose logs airflow-webserver || echo "Error retrieving webserver logs"
+
+    - name: Check Docker Compose Service Status
+      working-directory: ./docker
+      run: |
+        docker-compose ps  # Show current state of containers
+
+    - name: Print Full Logs from Container (in case of errors)
       run: |
         container_id=$(docker ps -q --filter "name=airflow-webserver")
         if [ -n "$container_id" ]; then
-          docker logs $container_id
+          echo "Printing logs for container ID: $container_id"
+          docker logs $container_id || echo "Error retrieving logs from container"
         else
-          echo "Airflow Webserver container not found!"
+          echo "Airflow Webserver container not found! Logs could not be retrieved."
         fi
 
     - name: Wait for Airflow health check
@@ -124,6 +126,6 @@ jobs:
           retries=$((retries+1))
           sleep 10
         done
-        
+
 
 
