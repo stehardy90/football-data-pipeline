@@ -74,7 +74,15 @@ jobs:
       env:
         GOOGLE_CREDENTIALS_JSON: ${{ secrets.DOCKER_GOOGLE_APPLICATION_CREDENTIALS }}
       run: |
-        echo "$GOOGLE_CREDENTIALS_JSON" > /tmp/gcp_credentials.json  
+        echo "$DOCKER_GOOGLE_CREDENTIALS_JSON" > /tmp/gcp_credentials.json  
+        ls -la /tmp/gcp_credentials.json  
+        cat /tmp/gcp_credentials.json  
+        
+    - name: Set environment variable for Google Cloud Credentials
+      env:
+        GOOGLE_CREDENTIALS_JSON: ${{ secrets.DOCKER_GOOGLE_APPLICATION_CREDENTIALS }}
+      run: |
+        echo "$LOCAL_GOOGLE_CREDENTIALS_JSON" > /tmp/gcp_credentials.json  
         ls -la /tmp/gcp_credentials.json  
         cat /tmp/gcp_credentials.json  
 
