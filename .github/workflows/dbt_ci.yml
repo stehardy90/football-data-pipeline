@@ -79,6 +79,10 @@ jobs:
       run: |
         export DOCKER_GOOGLE_APPLICATION_CREDENTIALS="/tmp/gcp_credentials.json"
         export LOCAL_GOOGLE_APPLICATION_CREDENTIALS="/tmp/gcp_credentials.json"
+        
+    - name: Create empty .env file
+      run: |
+        touch docker/.env  # Create an empty .env file in the correct path
 
     - name: Run Docker Compose
       env:
