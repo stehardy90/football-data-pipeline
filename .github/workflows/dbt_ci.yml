@@ -84,9 +84,10 @@ jobs:
       run: |
         touch docker/.env  # Create an empty .env file in the correct path
         
-    - name: Create logs directory
+    - name: Create local logs directory
       run: |
-        mkdir -p ./docker/logs  # Create the logs directory within the project
+        mkdir -p ../src/dags/logs  # Ensure the logs directory exists on the host
+        chmod -R 755 ../src/dags/logs  # Ensure proper permissions
 
     - name: Run Docker Compose
       env:
