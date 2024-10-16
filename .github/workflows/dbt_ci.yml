@@ -84,4 +84,5 @@ jobs:
     # Run Python unit tests
     - name: Run Python tests
       run: |
-        pytest tests/test_ingest.py  
+        export PYTHONPATH=$PYTHONPATH:./src  # Add src to PYTHONPATH so Python can find competition_data_ingest.py
+        pytest tests/test_ingest.py

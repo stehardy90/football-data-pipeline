@@ -1,7 +1,8 @@
 import pytest
 import requests
 from unittest.mock import patch, MagicMock
-from ingest import fetch_and_store, build_url_and_table, create_table_if_not_exists  # Adjust the import path
+from src.ingest.competition_data_ingest import fetch_and_store, build_url_and_table, create_table_if_not_exists
+
 
 # Mock constants
 MOCK_COMPETITION_ID = '2021'
