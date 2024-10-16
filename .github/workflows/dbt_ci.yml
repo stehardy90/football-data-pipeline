@@ -56,6 +56,10 @@ jobs:
       working-directory: ./src/transform  
 
     - name: Run dbt tests
+      env:
+        GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}  # Use GitHub repository variable
+        BIGQUERY_DATASET: ${{ vars.BIGQUERY_DATASET }}  # Use GitHub repository variable
+        DOCKER_GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp_credentials.json  # Explicitly pass the environment variable
       run: |
         dbt test
       working-directory: ./src/transform  
