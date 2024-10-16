@@ -88,44 +88,37 @@ jobs:
       env:
         DOCKER_GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp_credentials.json
         LOCAL_GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp_credentials.json
-      working-directory: ./docker  # Ensure you are in the correct directory
+      working-directory: ./docker
       run: |
         docker-compose up --build -d
         docker-compose ps  # Ensure the containers are in a healthy state
 
     - name: Print Docker Compose Logs (Capture Errors Early)
-      working-directory: ./docker  # Ensure you are in the correct directory
+      working-directory: ./docker
       run: |
         docker-compose logs airflow-webserver || echo "Error retrieving webserver logs"
 
-    - name: Check Docker Compose Service Status
-      working-directory: ./docker
-      run: |
-        docker-compose ps  # Show current state of containers
-
-    - name: Print Full Logs from Container (in case of errors)
+    - name: Tail Airflow Webserver Logs
       run: |
         container_id=$(docker ps -q --filter "name=airflow-webserver")
         if [ -n "$container_id" ]; then
-          echo "Printing logs for container ID: $container_id"
-          docker logs $container_id || echo "Error retrieving logs from container"
+          echo "Tailing logs for container ID: $container_id"
+          docker logs --tail 50 --follow $container_id
         else
           echo "Airflow Webserver container not found! Logs could not be retrieved."
         fi
 
-    - name: Wait for Airflow health check
+    - name: Check Airflow Health Endpoint
       run: |
-        max_retries=10  # Set a limit for the number of retries
-        retries=0
-        until docker exec airflow-webserver curl --fail http://localhost:8080/health; do
-          if [ $retries -ge $max_retries ]; then
-            echo "Max retries reached, exiting..."
-            exit 1
-          fi
-          echo "Waiting for Airflow to be ready... (retry: $retries)"
-          retries=$((retries+1))
-          sleep 10
-        done
+        container_id=$(docker ps -q --filter "name=airflow-webserver")
+        if [ -n "$container_id" ]; then
+          echo "Checking Airflow health..."
+          curl --fail http://localhost:8080/health || (echo "Airflow health check failed" && exit 1)
+        else
+          echo "Airflow Webserver container not found for health check."
+          exit 1
+        fi
+
 
 
 
