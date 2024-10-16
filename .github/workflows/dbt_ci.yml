@@ -26,12 +26,15 @@ jobs:
         python -m pip install --upgrade pip
         pip install dbt-core dbt-bigquery
 
+    - name: Create Google Cloud Credentials JSON
+      uses: gr2m/create-json-action@v1
+      with:
+        key: "/tmp/gcp_credentials.json"  
+        value: ${{ secrets.DOCKER_GOOGLE_APPLICATION_CREDENTIALS }}  
+
     - name: Set up Google Cloud Credentials
-      env:
-        DOCKER_GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.DOCKER_GOOGLE_APPLICATION_CREDENTIALS }}
       run: |
-        echo $DOCKER_GOOGLE_APPLICATION_CREDENTIALS > /tmp/gcp_credentials.json
-        export DOCKER_GOOGLE_APPLICATION_CREDENTIALS="/tmp/gcp_credentials.json"
+        export DOCKER_GOOGLE_APPLICATION_CREDENTIALS="/tmp/gcp_credentials.json"s
 
     - name: Set up dbt profile
       run: |
