@@ -92,6 +92,12 @@ jobs:
       run: |
         docker-compose up --build -d
         docker-compose ps  # Ensure the containers are in a healthy state
+        
+    - name: Fix permissions for Airflow logs directory
+      run: |
+        sudo mkdir -p /opt/airflow/logs  # Ensure the directory exists
+        sudo chown -R airflow:airflow /opt/airflow/logs  # Adjust ownership to airflow user
+        sudo chmod -R 755 /opt/airflow/logs  # Ensure proper permissions
 
     - name: Print Docker Compose Logs (Capture Errors Early)
       working-directory: ./docker
