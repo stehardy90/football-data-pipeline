@@ -1,0 +1,4 @@
+pytest
+requests
+google-cloud-bigquery
+python-dotenv
