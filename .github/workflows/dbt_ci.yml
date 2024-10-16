@@ -88,7 +88,7 @@ jobs:
       run: |
         mkdir -p ../src/dags/logs  # Ensure the logs directory exists on the host
         chmod -R 755 ../src/dags/logs  # Ensure proper permissions
-
+        
     - name: Run Docker Compose
       env:
         DOCKER_GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp_credentials.json
@@ -97,6 +97,17 @@ jobs:
       run: |
         docker-compose up --build -d
         docker-compose ps  # Ensure the containers are in a healthy state
+        
+    - name: Fix permissions inside Airflow container
+      run: |
+        container_id=$(docker ps -q --filter "name=airflow-webserver")
+        if [ -n "$container_id" ]; then
+          docker exec $container_id mkdir -p /opt/airflow/logs/scheduler
+          docker exec $container_id chmod -R 755 /opt/airflow/logs
+        else
+          echo "Airflow Webserver container not found!"
+          exit 1
+        fi
         
     - name: Print Docker Compose Logs (Capture Errors Early)
       working-directory: ./docker
