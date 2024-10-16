@@ -30,6 +30,7 @@ models:
         description: "The coaches date of birth"
         tests:
           - not_null
+          - date_of_birth_more_than_10_years_ago  
       - name: coach_nationality
         description: "Nationality of the coach"
         tests:
@@ -138,11 +139,10 @@ models:
       - name: loaded_date
         tests:
           - not_null
-
-    # Custom tests
-    tests:
-      - date_of_birth_more_than_10_years_ago
-      
+      - name: player_date_of_birth
+        tests: 
+          - date_of_birth_more_than_10_years_ago  
+    
   - name: dim_referees
     description: "Dimension table for referees"
     columns:

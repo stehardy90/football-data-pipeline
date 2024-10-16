@@ -4,7 +4,7 @@ WITH raw_players AS (
         CAST(JSON_EXTRACT_SCALAR(team_data, '$.id') AS INT64) AS team_id,
         JSON_EXTRACT_SCALAR(player_data, '$.name') AS player_name,
         COALESCE(JSON_EXTRACT_SCALAR(player_data, '$.position'), 'Unknown') AS player_position,
-        CAST(JSON_EXTRACT_SCALAR(player_data, '$.dateOfBirth') AS DATE) AS player_date_of_birth,
+        CASE WHEN CAST(JSON_EXTRACT_SCALAR(player_data, '$.dateOfBirth') AS DATE) >= DATE_SUB(CURRENT_DATE(), INTERVAL 10 YEAR) THEN NULL ELSE CAST(JSON_EXTRACT_SCALAR(player_data, '$.dateOfBirth') AS DATE) END AS player_date_of_birth,
         JSON_EXTRACT_SCALAR(player_data, '$.nationality') AS player_nationality,
         ROW_NUMBER() OVER (PARTITION BY JSON_EXTRACT_SCALAR(player_data, '$.id') ORDER BY loaded_date DESC) AS row_num
     FROM `{{ var('bigquery_dataset') }}.raw_football_teams`,
