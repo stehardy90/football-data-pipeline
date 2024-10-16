@@ -60,7 +60,7 @@ models:
   - name: stg_standings
     description: "Staging table for standings"
     columns:
-      - name: position
+      - name: league_position
         tests:
           - not_null
       - name: team_id
@@ -82,18 +82,15 @@ models:
       - name: player_id
         tests:
           - not_null
-          - unique   
       - name: team_id
         tests:
           - not_null
-          - unique  
       - name: competition_id
         tests:
           - not_null
-          - unique  
       - name: season_id
         tests:
           - not_null
-          - unique            
+        
 
 

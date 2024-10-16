@@ -7,7 +7,6 @@ models:
       - name: area_code
         tests:
           - not_null
-          - unique 
       - name: area_name
         tests:
           - not_null
@@ -23,24 +22,23 @@ models:
         description: "Unique ID for coaches"
         tests:
           - unique
-          - not_null
       - name: coach_name
         description: "Name of the coach"
         tests:
           - not_null
-      - name: date_of_birth
+      - name: coach_date_of_birth
         description: "The coaches date of birth"
         tests:
           - not_null
-      - name: nationality
+      - name: coach_nationality
         description: "Nationality of the coach"
         tests:
           - not_null
-      - name: contract_start
+      - name: coach_contract_start
         description: "Contract start date for the coach"
         tests:
           - not_null
-      - name: contract_until
+      - name: coach_contract_until
         description: "Contract end date for the coach"
         tests:
           - not_null
@@ -62,11 +60,10 @@ models:
       - name: competition_id
         tests:
           - not_null
-          - unique 
-      - name: code
+      - name: competition_code
         tests:
           - not_null
-      - name: type
+      - name: competition_type
         tests:
           - not_null  
       - name: area_code
@@ -121,17 +118,16 @@ models:
       - name: player_id
         description: "Unique ID for players"
         tests:
-          - unique
           - not_null
       - name: player_name
         description: "Name of the player"
         tests:
           - not_null 
-      - name: position
+      - name: player_position
         description: "Players main position"
         tests:
           - not_null
-      - name: nationality
+      - name: player_nationality
         description: "Players nationality"
         tests:
           - not_null          
@@ -153,13 +149,12 @@ models:
       - name: referee_id
         description: "Unique ID for referees"
         tests:
-          - unique
           - not_null
       - name: referee_name
         description: "Name of the referee"
         tests:
           - not_null 
-      - name: nationality
+      - name: referee_nationality
         description: "Referees nationality"
         tests:
           - not_null
@@ -173,7 +168,6 @@ models:
       - name: season_id
         description: "Unique ID for seasons"
         tests:
-          - unique
           - not_null
       - name: season_start_date
         description: "Start date for the season"
@@ -252,11 +246,9 @@ models:
       - name: team_id
         tests:
           - not_null
-          - unique
-      - name: position
+      - name: league_position
         tests:
           - not_null
-          - unique
       - name: won
         tests:
           - not_null

@@ -1,13 +1,13 @@
 {% macro test_date_of_birth_more_than_10_years_ago(model) %}
     SELECT *
     FROM {{ model }}
-    WHERE date_of_birth >= DATE_SUB(CURRENT_DATE(), INTERVAL 10 YEAR)
+    WHERE {{ column_name }} >= DATE_SUB(CURRENT_DATE(), INTERVAL 10 YEAR)
 {% endmacro %}
 
 {% macro test_contract_start_before_end(model) %}
     SELECT *
     FROM {{ model }}
-    WHERE contract_start >= contract_until
+    WHERE coach_contract_start >= coach_contract_until
 {% endmacro %}
 
 {% macro test_half_time_score_valid(model) %}

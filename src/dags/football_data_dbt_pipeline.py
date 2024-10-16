@@ -68,10 +68,18 @@ def run_dbt_test_and_log_results(task_instance, dbt_command):
 
     stdout_str = stdout.decode('utf-8')
     stderr_str = stderr.decode('utf-8')
+    exit_code = process.returncode  # Capture the exit code
+
+    # Log both stdout and stderr to Airflow logs
+    print("dbt test output (stdout):")
+    print(stdout_str)  # This will print the test results in Airflow logs
+
+    print("dbt test errors (stderr):")
+    print(stderr_str)  # Log any errors from dbt test in Airflow logs
 
     # Extract test pass/fail information from the stdout
     pass_match = re.search(r"PASS=(\d+)", stdout_str)
-    fail_match = re.search(r"ERROR=(\d+)", stdout_str)
+    fail_match = re.search(r"ERROR=(\d+)", stdout_str)  # Modify to capture FAIL
     total_match = re.search(r"TOTAL=(\d+)", stdout_str)
 
     test_passes = int(pass_match.group(1)) if pass_match else 0
@@ -79,20 +87,17 @@ def run_dbt_test_and_log_results(task_instance, dbt_command):
     total_tests = int(total_match.group(1)) if total_match else 0
 
     # Collect a clean summary from the dbt test output
-    # Keep only useful lines, ignore debug messages
     clean_summary = []
     for line in stdout_str.splitlines():
         if 'PASS' in line or 'ERROR' in line or 'WARN' in line or 'FAIL' in line or 'SKIP' in line:
             clean_summary.append(line)
-        # Add specific test failures if you want more details
         if 'FAIL' in line:
             clean_summary.append(line)
 
-    # Join the clean summary into a single string
     test_summary = "\n".join(clean_summary)
 
-    # Determine test status based on failures
-    status = 'success' if test_failures == 0 else 'failure'
+    # Determine test status based on exit code and failures
+    status = 'success' if exit_code == 0 and test_failures == 0 else 'failure'
 
     # Log the result into BigQuery - this will happen regardless of pass/fail
     log_etl_run(
@@ -101,12 +106,13 @@ def run_dbt_test_and_log_results(task_instance, dbt_command):
         test_passes=test_passes, 
         test_failures=test_failures,
         total_tests=total_tests,
-        test_summary=test_summary  # Store only the clean summary
+        test_summary=test_summary
     )
 
-    # If the test failed, trigger Slack alert after logging
-    if test_failures > 0:
+    # If the test failed or the dbt command exited with a non-zero code, trigger Slack alert and raise an exception
+    if exit_code != 0 or test_failures > 0:
         failure_callback_with_slack({'task_instance': task_instance})
+        raise Exception(f"dbt test failed: {test_summary}")  # Raise an exception to fail the Airflow task
 
 # Define default arguments
 default_args = {

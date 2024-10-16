@@ -3,7 +3,7 @@ SELECT
 FROM 
     football-data-pipeline.football_data_aggregate.dim_coaches
 WHERE 
-    date_of_birth >= DATE_SUB(CURRENT_DATE(), INTERVAL 10 YEAR)
+    coach_date_of_birth >= DATE_SUB(CURRENT_DATE(), INTERVAL 10 YEAR)
 
 
 UNION ALL
@@ -13,4 +13,4 @@ SELECT
 FROM 
     football-data-pipeline.football_data_aggregate.dim_players
 WHERE 
-    date_of_birth >= DATE_SUB(CURRENT_DATE(), INTERVAL 10 YEAR)
+    player_date_of_birth >= DATE_SUB(CURRENT_DATE(), INTERVAL 10 YEAR)
