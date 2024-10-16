@@ -3,32 +3,49 @@ import requests
 from unittest.mock import patch, MagicMock
 import os
 
-# Patch credentials BEFORE the module imports to avoid file access errors
-@patch('src.ingest.competition_data_ingest.service_account.Credentials.from_service_account_info', return_value=MagicMock())
-@patch('src.ingest.competition_data_ingest.service_account.Credentials.from_service_account_file', return_value=MagicMock())
+# Mock constants
+MOCK_COMPETITION_ID = '2021'
+MOCK_RESOURCE = 'matches'
+MOCK_API_URL = f"https://api.football-data.org/v4/competitions/{MOCK_COMPETITION_ID}/{MOCK_RESOURCE}"
+MOCK_TABLE_ID = 'project.dataset.raw_football_matches'
+MOCK_API_KEY = 'fake_api_key'
+
+# Mock data for testing
+MOCK_API_RESPONSE = {
+    "count": 380,
+    "matches": [{"id": 123, "status": "SCHEDULED", "utcDate": "2024-08-13T19:00:00Z"}]
+}
+
+MOCK_BIGQUERY_DATA = {
+    'endpoint': MOCK_API_URL,
+    'raw_json': '{"count":380,"matches":[{"id":123,"status":"SCHEDULED","utcDate":"2024-08-13T19:00:00Z"}]}',
+    'loaded_date': '2024-08-13T19:00:00Z'
+}
+
+# Patch os.getenv globally for all tests to ensure environment variables are set
+@patch('src.ingest.competition_data_ingest.service_account.Credentials', autospec=True)
 @patch('os.getenv', side_effect=lambda key, default=None: {
-    "API_KEY": "fake_api_key",
-    "COMPETITION_IDS": "2021",
-    "API_RESOURCES": "matches",
+    "API_KEY": MOCK_API_KEY,
+    "COMPETITION_IDS": MOCK_COMPETITION_ID,
+    "API_RESOURCES": MOCK_RESOURCE,
     "DOCKER_GOOGLE_APPLICATION_CREDENTIALS": "mock_credentials"
 }.get(key, default))
-def test_build_url_and_table(mock_getenv, mock_service_account_info, mock_service_account_file):
+def test_build_url_and_table(mock_getenv, mock_credentials):
     """
-    Test the build_url_and_table function constructs the correct API URL
+    Test if the build_url_and_table function constructs the correct API URL
     and corresponding BigQuery table ID.
     """
     from src.ingest.competition_data_ingest import build_url_and_table
-    api_url, table_id = build_url_and_table('matches', '2021')
-    assert api_url == "https://api.football-data.org/v4/competitions/2021/matches"
-    assert table_id == "project.dataset.raw_football_matches"
-
+    api_url, table_id = build_url_and_table(MOCK_RESOURCE, MOCK_COMPETITION_ID)
+    assert api_url == MOCK_API_URL
+    assert table_id == MOCK_TABLE_ID
 
 # Mock the BigQuery client and test table creation
 @patch('src.ingest.competition_data_ingest.bigquery.Client')
 @patch('os.getenv', side_effect=lambda key, default=None: {
-    "API_KEY": "fake_api_key",
-    "COMPETITION_IDS": "2021",
-    "API_RESOURCES": "matches",
+    "API_KEY": MOCK_API_KEY,
+    "COMPETITION_IDS": MOCK_COMPETITION_ID,
+    "API_RESOURCES": MOCK_RESOURCE,
     "DOCKER_GOOGLE_APPLICATION_CREDENTIALS": "mock_credentials"
 }.get(key, default))
 @patch('src.ingest.competition_data_ingest.service_account.Credentials.from_service_account_file', return_value=MagicMock())
@@ -44,15 +61,14 @@ def test_create_table_if_not_exists(mock_getenv, mock_bigquery_client, mock_serv
     create_table_if_not_exists("project.dataset.raw_football_matches")
     mock_bigquery_client.return_value.get_table.assert_called_once_with("project.dataset.raw_football_matches")
 
-
 # Test the API fetching and BigQuery insertion with mock data
 @patch('src.ingest.competition_data_ingest.requests.get')
 @patch('src.ingest.competition_data_ingest.bigquery.Client')
 @patch('src.ingest.competition_data_ingest.service_account.Credentials.from_service_account_file', return_value=MagicMock())
 @patch('os.getenv', side_effect=lambda key, default=None: {
-    "API_KEY": "fake_api_key",
-    "COMPETITION_IDS": "2021",
-    "API_RESOURCES": "matches",
+    "API_KEY": MOCK_API_KEY,
+    "COMPETITION_IDS": MOCK_COMPETITION_ID,
+    "API_RESOURCES": MOCK_RESOURCE,
     "DOCKER_GOOGLE_APPLICATION_CREDENTIALS": "mock_credentials"
 }.get(key, default))
 def test_fetch_and_store(mock_getenv, mock_service_account_file, mock_bigquery_client, mock_requests_get):
@@ -63,7 +79,7 @@ def test_fetch_and_store(mock_getenv, mock_service_account_file, mock_bigquery_c
 
     # Mock API response
     mock_response = MagicMock()
-    mock_response.json.return_value = {"count": 380, "matches": [{"id": 123, "status": "SCHEDULED"}]}
+    mock_response.json.return_value = MOCK_API_RESPONSE
     mock_response.raise_for_status = MagicMock()
     mock_requests_get.return_value = mock_response
 
@@ -84,15 +100,14 @@ def test_fetch_and_store(mock_getenv, mock_service_account_file, mock_bigquery_c
                                                                     'raw_json': '{"count":380,"matches":[{"id":123,"status":"SCHEDULED"}]}',
                                                                     'loaded_date': '2024-08-13T19:00:00Z'}])
 
-
 # Test rate limit retry behavior (429 error)
 @patch('src.ingest.competition_data_ingest.requests.get')
 @patch('src.ingest.competition_data_ingest.time.sleep', return_value=None)  # Mock time.sleep to avoid delays in testing
 @patch('src.ingest.competition_data_ingest.service_account.Credentials.from_service_account_file', return_value=MagicMock())
 @patch('os.getenv', side_effect=lambda key, default=None: {
-    "API_KEY": "fake_api_key",
-    "COMPETITION_IDS": "2021",
-    "API_RESOURCES": "matches",
+    "API_KEY": MOCK_API_KEY,
+    "COMPETITION_IDS": MOCK_COMPETITION_ID,
+    "API_RESOURCES": MOCK_RESOURCE,
     "DOCKER_GOOGLE_APPLICATION_CREDENTIALS": "mock_credentials"
 }.get(key, default))
 def test_rate_limit_retry(mock_getenv, mock_service_account_file, mock_sleep, mock_requests_get):
