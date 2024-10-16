@@ -98,11 +98,12 @@ jobs:
       run: |
         docker-compose ps  
 
-    - name: Check Airflow Webserver Status
+    - name: Wait for Airflow health check
       run: |
-        curl --fail http://localhost:8080/health
-      env:
-        AIRFLOW__CORE__EXECUTOR: LocalExecutor
+        until curl --fail http://localhost:8080/health; do
+          echo "Waiting for Airflow to be ready..."
+          sleep 10
+        done
         
 
 
