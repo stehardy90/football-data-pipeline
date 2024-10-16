@@ -76,11 +76,13 @@ jobs:
         sudo apt-get install docker-compose -y
 
     - name: Set up Docker Build and Start Containers
+      working-directory: ./docker  # Ensure you are in the correct directory
       run: |
         docker-compose up --build -d
         docker ps  
 
     - name: Verify Docker Health Check
+      working-directory: ./docker  # Ensure you are in the correct directory
       run: |
         docker-compose ps  
 
