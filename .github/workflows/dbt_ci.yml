@@ -83,6 +83,12 @@ jobs:
 
     # Run Python unit tests
     - name: Run Python tests
+      env:
+        API_KEY: ${{ secrets.API_KEY }}  
+        GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}  
+        BIGQUERY_DATASET: ${{ vars.BIGQUERY_DATASET }}  
+        DOCKER_GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp_credentials.json  
+        COMPETITION_IDS: "2021,2014,2002"  
       run: |
-        export PYTHONPATH=$PYTHONPATH:./src  # Add src to PYTHONPATH so Python can find competition_data_ingest.py
+        export PYTHONPATH=$PYTHONPATH:./src  
         pytest tests/test_ingest.py
