@@ -102,7 +102,7 @@ jobs:
       run: |
         max_retries=10  # Set a limit for the number of retries
         retries=0
-        until curl --fail http://airflow-webserver:8080/health; do
+        until docker exec airflow-webserver curl --fail http://localhost:8080/health; do
           if [ $retries -ge $max_retries ]; then
             echo "Max retries reached, exiting..."
             exit 1
