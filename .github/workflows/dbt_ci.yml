@@ -32,9 +32,8 @@ jobs:
       run: |
         echo "$GOOGLE_CREDENTIALS_JSON" > /tmp/gcp_credentials.json  
         ls -la /tmp/gcp_credentials.json  
-        cat /tmp/gcp_credentials.json  #
+        cat /tmp/gcp_credentials.json  
 
-    # Use the JSON file for credentials
     - name: Set up Google Cloud Credentials
       run: |
         export DOCKER_GOOGLE_APPLICATION_CREDENTIALS="/tmp/gcp_credentials.json"
@@ -43,13 +42,13 @@ jobs:
     - name: Set up dbt profile
       run: |
         mkdir -p ~/.dbt
-        cp config/dbt/profiles.yml ~/.dbt/profiles.yml  # Copy profiles.yml to the default dbt location
+        cp config/dbt/profiles.yml ~/.dbt/profiles.yml  
 
     - name: Run dbt models
       env:
-        GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}  # Use GitHub repository variable
-        BIGQUERY_DATASET: ${{ vars.BIGQUERY_DATASET }}  # Use GitHub repository variable
-        DOCKER_GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp_credentials.json  # Explicitly pass the environment variable
+        GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}  
+        BIGQUERY_DATASET: ${{ vars.BIGQUERY_DATASET }}  
+        DOCKER_GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp_credentials.json  
       run: |
         dbt deps  # Install dbt packages
         dbt run
@@ -57,9 +56,32 @@ jobs:
 
     - name: Run dbt tests
       env:
-        GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}  # Use GitHub repository variable
-        BIGQUERY_DATASET: ${{ vars.BIGQUERY_DATASET }}  # Use GitHub repository variable
-        DOCKER_GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp_credentials.json  # Explicitly pass the environment variable
+        GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}  
+        BIGQUERY_DATASET: ${{ vars.BIGQUERY_DATASET }}  
+        DOCKER_GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp_credentials.json  
       run: |
         dbt test
       working-directory: ./src/transform  
+      
+  # Python unit tests job for ingestion scripts
+  python_test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt  
+
+    # Run Python unit tests
+    - name: Run Python tests
+      run: |
+        pytest tests/test_ingest.py  

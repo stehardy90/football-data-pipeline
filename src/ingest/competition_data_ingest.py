@@ -33,7 +33,7 @@ if not COMPETITION_IDS:
 if not API_RESOURCES:
     raise ValueError("API_RESOURCES environment variable not set.")
 
-# Initialize BigQuery client
+# Initialise BigQuery client
 credentials = service_account.Credentials.from_service_account_file(KEYFILE)
 client = bigquery.Client(credentials=credentials, project=PROJECT_ID)
 
