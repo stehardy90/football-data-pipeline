@@ -70,39 +70,23 @@ jobs:
     - name: Check out repository
       uses: actions/checkout@v2
       
-    - name: Set environment variable for Google Cloud Credentials
-      env:
-        GOOGLE_CREDENTIALS_JSON: ${{ secrets.DOCKER_GOOGLE_APPLICATION_CREDENTIALS }}
-      run: |
-        echo "$DOCKER_GOOGLE_CREDENTIALS_JSON" > /tmp/gcp_credentials.json  
-        ls -la /tmp/gcp_credentials.json  
-        cat /tmp/gcp_credentials.json  
-        
-    - name: Set environment variable for Google Cloud Credentials
-      env:
-        GOOGLE_CREDENTIALS_JSON: ${{ secrets.DOCKER_GOOGLE_APPLICATION_CREDENTIALS }}
-      run: |
-        echo "$LOCAL_GOOGLE_CREDENTIALS_JSON" > /tmp/gcp_credentials.json  
-        ls -la /tmp/gcp_credentials.json  
-        cat /tmp/gcp_credentials.json  
-
-    - name: Set up Google Cloud Credentials
-      run: |
-        export DOCKER_GOOGLE_APPLICATION_CREDENTIALS="/tmp/gcp_credentials.json"
-        export LOCAL_GOOGLE_APPLICATION_CREDENTIALS="/tmp/gcp_credentials.json"
-        echo $DOCKER_GOOGLE_APPLICATIONS_CREDENTIALS
-        echo $LOCAL_GOOGLE_APPLICATIONS_CREDENTIALS  
-
     - name: Install Docker Compose
       run: |
         sudo apt-get update
         sudo apt-get install docker-compose -y
+        
+    - name: Set up Google Cloud Credentials
+      run: |
+        export DOCKER_GOOGLE_APPLICATION_CREDENTIALS="/tmp/gcp_credentials.json"
+        export LOCAL_GOOGLE_APPLICATION_CREDENTIALS="/tmp/gcp_credentials.json"
 
-    - name: Set up Docker Build and Start Containers
-      working-directory: ./docker  # Ensure you are in the correct directory
+    - name: Run Docker Compose
+      env:
+        DOCKER_GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp_credentials.json
+        LOCAL_GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp_credentials.json
       run: |
         docker-compose up --build -d
-        docker ps  
+        docker-compose ps  # Ensure the containers are in a healthy state
 
     - name: Verify Docker Health Check
       working-directory: ./docker  # Ensure you are in the correct directory
