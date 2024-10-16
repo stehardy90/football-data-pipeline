@@ -100,7 +100,16 @@ jobs:
         
     - name: Print Airflow webserver logs
       working-directory: ./docker  # Ensure you are in the correct directory
-      run: docker logs $(docker ps -q --filter "name=airflow-webserver")
+      run:   docker logs airflow-webserver
+      
+    - name: Get and Print Airflow Webserver Logs by Container ID
+      run: |
+        container_id=$(docker ps -q --filter "name=airflow-webserver")
+        if [ -n "$container_id" ]; then
+          docker logs $container_id
+        else
+          echo "Airflow Webserver container not found!"
+        fi
 
     - name: Wait for Airflow health check
       run: |
