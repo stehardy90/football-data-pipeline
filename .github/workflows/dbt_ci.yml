@@ -98,12 +98,11 @@ jobs:
         docker-compose up --build -d
         docker-compose ps  # Ensure the containers are in a healthy state
         
-    - name: Fix permissions inside Airflow container
+    - name: Fix permissions for logs directory inside Airflow container
       run: |
         container_id=$(docker ps -q --filter "name=airflow-webserver")
         if [ -n "$container_id" ]; then
-          docker exec $container_id mkdir -p /opt/airflow/logs/scheduler
-          docker exec $container_id chmod -R 755 /opt/airflow/logs
+          docker exec $container_id chmod -R 777 /opt/airflow/logs  # Full write access for all users
         else
           echo "Airflow Webserver container not found!"
           exit 1
