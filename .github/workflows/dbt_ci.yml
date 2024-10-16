@@ -29,7 +29,7 @@ jobs:
     # Write the Google Cloud credentials from the secret to a JSON file
     - name: Create Google Cloud Credentials JSON
       run: |
-        echo "${{ secrets.DOCKER_GOOGLE_APPLICATION_CREDENTIALS }}" > /tmp/gcp_credentials.json
+        printf '%s' "${{ secrets.DOCKER_GOOGLE_APPLICATION_CREDENTIALS }}" > /tmp/gcp_credentials.json
         ls -la /tmp/gcp_credentials.json  # Verify the file has been created
         cat /tmp/gcp_credentials.json  # Output the content to verify it's not empty (for debugging purposes)
 
