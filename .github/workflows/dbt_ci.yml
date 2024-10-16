@@ -70,14 +70,19 @@ jobs:
     - name: Check out repository
       uses: actions/checkout@v2
 
+    - name: Install Docker Compose
+      run: |
+        sudo apt-get update
+        sudo apt-get install docker-compose -y
+
     - name: Set up Docker Build and Start Containers
       run: |
         docker-compose up --build -d
-        docker ps  # List running containers to verify they are up
+        docker ps  
 
     - name: Verify Docker Health Check
       run: |
-        docker-compose ps  # Ensure the containers are in a healthy state
+        docker-compose ps  
 
     - name: Check Airflow Webserver Status
       run: |
