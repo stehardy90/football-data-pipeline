@@ -10,14 +10,14 @@ from datetime import datetime
 # Load environment variables
 load_dotenv()
 
-API_KEY = os.getenv('API_KEY')
-PROJECT_ID = os.getenv('GCP_PROJECT_ID')
-DATASET_ID = os.getenv('BIGQUERY_DATASET') 
-KEYFILE = os.getenv('DOCKER_GOOGLE_APPLICATION_CREDENTIALS')
+API_KEY = os.getenv('API_KEY', 'default_api_key')
+PROJECT_ID = os.getenv('GCP_PROJECT_ID', 'default_project_id')
+DATASET_ID = os.getenv('BIGQUERY_DATASET', 'default_dataset_id') 
+KEYFILE = os.getenv('DOCKER_GOOGLE_APPLICATION_CREDENTIALS', 'default_credentials')
 BIGQUERY_LOCATION = os.getenv('BIGQUERY_LOCATION', 'EU')
 BASE_URL = "https://api.football-data.org/v4"  # API base URL
-COMPETITION_IDS = os.getenv('COMPETITION_IDS').split(',')
-API_RESOURCES = os.getenv('API_RESOURCES').split(',')
+COMPETITION_IDS = os.getenv('COMPETITION_IDS', '2021').split(',')
+API_RESOURCES = os.getenv('API_RESOURCES', 'competitions, matches').split(',')
 
 # Check if all required environment variables are set
 if not API_KEY:
