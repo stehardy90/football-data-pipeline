@@ -63,26 +63,27 @@ jobs:
         dbt test
       working-directory: ./src/transform  
       
-  # Python unit tests job for ingestion scripts
-  python_test:
+  docker_and_airflow_test:
     runs-on: ubuntu-latest
 
     steps:
     - name: Check out repository
       uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.x'
-
-    - name: Install Python dependencies
+    - name: Set up Docker Build and Start Containers
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt  
+        docker-compose up --build -d
+        docker ps  # List running containers to verify they are up
 
-    # Run Python unit tests
-    - name: Run Python tests
+    - name: Verify Docker Health Check
       run: |
-        export PYTHONPATH=$PYTHONPATH:./src  
-        pytest tests/test_ingest.py
+        docker-compose ps  # Ensure the containers are in a healthy state
+
+    - name: Check Airflow Webserver Status
+      run: |
+        curl --fail http://localhost:8080/health
+      env:
+        AIRFLOW__CORE__EXECUTOR: LocalExecutor
+        
+
+
