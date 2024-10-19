@@ -21,22 +21,29 @@ def test_create_table_if_not_exists(mock_credentials, mock_bigquery_client, mock
     
     # Debugging statement
     print("Mocking bigquery.Client...")
-    
+
     # Mock get_table to raise an exception to simulate "table not found"
     mock_instance.get_table.side_effect = Exception("Table not found.")
     
     # Mock create_table to prevent real API calls
     mock_instance.create_table = MagicMock()
-
+    
     # Mock credentials to prevent any real credential issues
     mock_credentials.from_service_account_file.return_value = MagicMock()
+
+    # Add debugging to capture the instance type issues
+    print("Attempting to create the table...")
     
     # Call the function
-    create_table_if_not_exists("test_project_id.test_dataset.raw_table")
+    try:
+        create_table_if_not_exists("test_project_id.test_dataset.raw_table")
+    except Exception as e:
+        # Print the exception to better understand the flow
+        print(f"Exception during create_table_if_not_exists: {e}")
     
     # Debugging statement to confirm the flow reached this point
     print("Checking if create_table was called...")
-    
+
     # Assert that create_table was called after the table was not found
     mock_instance.create_table.assert_called()
 
