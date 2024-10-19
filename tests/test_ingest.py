@@ -12,20 +12,24 @@ def mock_env(monkeypatch):
     monkeypatch.setenv('COMPETITION_IDS', '2021')
     monkeypatch.setenv('API_RESOURCES', 'competitions,matches')
 
-# Mock bigquery.Client from the appropriate module
+# Mock bigquery.Client and service_account.Credentials
 @patch('ingest.competition_data_ingest.bigquery.Client')
-def test_create_table_if_not_exists(mock_bigquery_client, mock_env):
+@patch('ingest.competition_data_ingest.service_account.Credentials')
+def test_create_table_if_not_exists(mock_credentials, mock_bigquery_client, mock_env):
     # Mock instance of bigquery.Client
     mock_instance = mock_bigquery_client.return_value
     
     # Debugging statement
     print("Mocking bigquery.Client...")
-
+    
     # Mock get_table to raise an exception to simulate "table not found"
     mock_instance.get_table.side_effect = Exception("Table not found.")
     
     # Mock create_table to prevent real API calls
     mock_instance.create_table = MagicMock()
+
+    # Mock credentials to prevent any real credential issues
+    mock_credentials.from_service_account_file.return_value = MagicMock()
     
     # Call the function
     create_table_if_not_exists("test_project_id.test_dataset.raw_table")
