@@ -33,8 +33,14 @@ def test_create_table_if_not_exists(mock_credentials, mock_bigquery_client, mock
     # Mock credentials to prevent any real credential issues
     mock_credentials.from_service_account_file.return_value = MagicMock()
 
-    # Create a mock bigquery Table object if create_table expects it
-    mock_table = bigquery.Table(table_id="test_project_id.test_dataset.raw_table")
+    # Create a mock bigquery TableReference object
+    table_ref = bigquery.TableReference(
+        bigquery.DatasetReference("test_project_id", "test_dataset"),
+        "raw_table"
+    )
+
+    # Create a mock bigquery Table object
+    mock_table = bigquery.Table(table_ref)
     mock_instance.create_table.return_value = mock_table
     
     # Add debugging to capture the instance type issues
