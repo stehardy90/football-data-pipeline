@@ -90,6 +90,6 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest --maxfail=1 --disable-warnings
+          pytest -v --maxfail=1 --disable-warnings
 
 
