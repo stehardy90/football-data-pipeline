@@ -73,6 +73,7 @@ jobs:
       DOCKER_GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.DOCKER_GOOGLE_APPLICATION_CREDENTIALS }}
       COMPETITION_IDS: ${{ vars.COMPETITION_IDS }}
       API_RESOURCES: ${{ vars.API_RESOURCES }}
+      PYTHONPATH: ./src  # Add this line to set PYTHONPATH
 
     steps:
       - name: Checkout code
