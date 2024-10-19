@@ -18,6 +18,9 @@ def test_create_table_if_not_exists(mock_bigquery_client, mock_env):
     # Mock instance of bigquery.Client
     mock_instance = mock_bigquery_client.return_value
     
+    # Debugging statement
+    print("Mocking bigquery.Client...")
+
     # Mock get_table to raise an exception to simulate "table not found"
     mock_instance.get_table.side_effect = Exception("Table not found.")
     
@@ -26,6 +29,9 @@ def test_create_table_if_not_exists(mock_bigquery_client, mock_env):
     
     # Call the function
     create_table_if_not_exists("test_project_id.test_dataset.raw_table")
+    
+    # Debugging statement to confirm the flow reached this point
+    print("Checking if create_table was called...")
     
     # Assert that create_table was called after the table was not found
     mock_instance.create_table.assert_called()
