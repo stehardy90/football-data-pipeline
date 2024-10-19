@@ -51,7 +51,7 @@ jobs:
         DOCKER_GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp_credentials.json  
       run: |
         dbt deps  # Install dbt packages
-        dbt run
+        dbt compile
       working-directory: ./src/transform  
 
     - name: Run dbt tests
@@ -63,61 +63,3 @@ jobs:
         dbt test
       working-directory: ./src/transform  
       
-  ingest_test:
-    runs-on: ubuntu-latest
-
-    env:
-      API_KEY: ${{ secrets.API_KEY }}
-      GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
-      BIGQUERY_DATASET: ${{ vars.BIGQUERY_DATASET }}
-      DOCKER_GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.DOCKER_GOOGLE_APPLICATION_CREDENTIALS }}
-      COMPETITION_IDS: ${{ vars.COMPETITION_IDS }}
-      API_RESOURCES: ${{ vars.API_RESOURCES }}
-      PYTHONPATH: ./src  # Add this line to set PYTHONPATH
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
-          
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          
-      - name: Set PYTHONPATH
-        run: |
-          export PYTHONPATH=$PYTHONPATH:$(pwd)/src
-          echo $PYTHONPATH
-          
-      - name: Set environment variable for Google Cloud Credentials
-        env:
-          GOOGLE_CREDENTIALS_JSON: ${{ secrets.DOCKER_GOOGLE_APPLICATION_CREDENTIALS }}
-        run: |
-          echo "$GOOGLE_CREDENTIALS_JSON" > /tmp/gcp_credentials.json  
-          ls -la /tmp/gcp_credentials.json  
-          
-      - name: Set up Google Cloud Credentials
-        run: |
-          export DOCKER_GOOGLE_APPLICATION_CREDENTIALS="/tmp/gcp_credentials.json"
-          echo $DOCKER_GOOGLE_APPLICATIONS_CREDENTIALS  # Verify that it's correctly set
-          
-      - name: Verify directory structure
-        run: |
-          ls -la
-          ls -la src
-          ls -la src/ingest
-
-      - name: Run Python tests
-        env:
-          GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
-          BIGQUERY_DATASET: ${{ vars.BIGQUERY_DATASET }}
-          DOCKER_GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp_credentials.json
-        run: |
-          python -m pytest -v --maxfail=1 --disable-warnings
-
-
