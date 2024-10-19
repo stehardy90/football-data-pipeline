@@ -96,9 +96,11 @@ jobs:
           cat /tmp/gcp_credentials.json
 
       - name: Build and start services
+        working-directory: ./docker  # Specify the Docker Compose file location
         run: docker-compose up -d --build
 
       - name: Wait for services to be healthy
+        working-directory: ./docker  # Specify the Docker Compose file location
         run: |
           echo "Waiting for Postgres to be ready..."
           until docker exec postgres-db pg_isready; do sleep 1; done
@@ -112,5 +114,6 @@ jobs:
           curl -f http://localhost:8080 || exit 1
 
       - name: Tear down
+        working-directory: ./docker  # Specify the Docker Compose file location
         if: always()
         run: docker-compose down
