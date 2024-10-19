@@ -2,7 +2,7 @@
 import os
 import pytest
 from unittest.mock import patch
-from src.ingest import fetch_and_store, create_table_if_not_exists, build_url_and_table
+from src.ingest.competition_data_ingest import fetch_and_store, create_table_if_not_exists, build_url_and_table
 
 @pytest.fixture
 def mock_env(monkeypatch):
