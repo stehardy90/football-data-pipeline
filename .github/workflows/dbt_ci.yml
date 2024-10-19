@@ -118,6 +118,6 @@ jobs:
           BIGQUERY_DATASET: ${{ vars.BIGQUERY_DATASET }}
           DOCKER_GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp_credentials.json
         run: |
-          PYTHONPATH=./src pytest -v --maxfail=1 --disable-warnings
+          python -m pytest -v --maxfail=1 --disable-warnings
 
 
