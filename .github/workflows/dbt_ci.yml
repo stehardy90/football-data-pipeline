@@ -105,6 +105,12 @@ jobs:
         run: |
           export DOCKER_GOOGLE_APPLICATION_CREDENTIALS="/tmp/gcp_credentials.json"
           echo $DOCKER_GOOGLE_APPLICATIONS_CREDENTIALS  # Verify that it's correctly set
+          
+      - name: Verify directory structure
+        run: |
+          ls -la
+          ls -la src
+          ls -la src/ingest
 
       - name: Run Python tests
         env:
@@ -112,6 +118,6 @@ jobs:
           BIGQUERY_DATASET: ${{ vars.BIGQUERY_DATASET }}
           DOCKER_GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp_credentials.json
         run: |
-          pytest -v --maxfail=1 --disable-warnings
+          PYTHONPATH=./src pytest -v --maxfail=1 --disable-warnings
 
 
