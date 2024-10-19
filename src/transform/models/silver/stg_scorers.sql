@@ -19,6 +19,7 @@ WITH raw_scorers AS (
         ) AS row_num
     FROM `{{ var('bigquery_dataset') }}.raw_football_scorers`,
     UNNEST(JSON_EXTRACT_ARRAY(raw_json, '$.scorers')) AS scorer_data 
+	WHERE JSON_EXTRACT_SCALAR(scorer_data, '$.player.id') IS NOT NULL
 )
 
 SELECT

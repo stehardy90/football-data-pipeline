@@ -16,6 +16,7 @@ WITH standings_staging AS (
     FROM `{{ var('bigquery_dataset') }}.raw_football_standings`,
     UNNEST(JSON_EXTRACT_ARRAY(raw_json, '$.standings')) AS standing_data,  -- Unnest standings
     UNNEST(JSON_EXTRACT_ARRAY(standing_data, '$.table')) AS team_data  -- Unnest table inside standings
+	WHERE JSON_EXTRACT_SCALAR(team_data, '$.team.id') IS NOT NULL
 )
 
 SELECT

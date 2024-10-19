@@ -13,6 +13,7 @@ WITH raw_teams AS (
         ROW_NUMBER() OVER (PARTITION BY JSON_EXTRACT_SCALAR(team_data, '$.id') ORDER BY loaded_date DESC) AS row_num
     FROM `{{ var('bigquery_dataset') }}.raw_football_teams`,
     UNNEST(JSON_EXTRACT_ARRAY(raw_json, '$.teams')) AS team_data  -- Unnest the teams array
+	WHERE JSON_EXTRACT_SCALAR(team_data, '$.id') IS NOT NULL
 )
 
 SELECT

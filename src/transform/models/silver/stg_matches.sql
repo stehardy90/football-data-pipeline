@@ -23,6 +23,7 @@ WITH raw_matches AS (
     FROM `{{ var('bigquery_dataset') }}.raw_football_matches`,
     UNNEST(JSON_EXTRACT_ARRAY(raw_json, '$.matches')) AS match_data,  
     UNNEST(JSON_EXTRACT_ARRAY(match_data, '$.referees')) AS ref_data  
+	WHERE JSON_EXTRACT_SCALAR(match_data, '$.id') IS NOT NULL
 )
 
 SELECT

@@ -10,6 +10,7 @@ WITH raw_players AS (
     FROM `{{ var('bigquery_dataset') }}.raw_football_teams`,
     UNNEST(JSON_EXTRACT_ARRAY(raw_json, '$.teams')) AS team_data,  -- Unnest the teams array first
     UNNEST(JSON_EXTRACT_ARRAY(team_data, '$.squad')) AS player_data  -- Then unnest the squad array inside teams
+		WHERE JSON_EXTRACT_SCALAR(player_data, '$.id') IS NOT NULL
 )
 
 SELECT

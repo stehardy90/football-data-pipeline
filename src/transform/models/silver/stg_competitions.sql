@@ -8,6 +8,7 @@ with raw_competitions as (
         JSON_EXTRACT_SCALAR(raw_json, '$.area.code') AS area_code,
         row_number() over (partition by JSON_EXTRACT_SCALAR(raw_json, '$.id') order by loaded_date desc) as row_num
     from `{{ var('bigquery_dataset') }}.raw_football_competitions`
+	WHERE JSON_EXTRACT_SCALAR(raw_json, '$.id') IS NOT NULL
 )
 
 select

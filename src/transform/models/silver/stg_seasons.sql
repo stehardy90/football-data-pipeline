@@ -8,6 +8,7 @@ WITH raw_seasons AS (
         row_number() OVER (PARTITION BY JSON_EXTRACT_SCALAR(season_data, '$.id') ORDER BY loaded_date DESC) AS row_num
     FROM `{{ var('bigquery_dataset') }}.raw_football_competitions`,  
     UNNEST(JSON_EXTRACT_ARRAY(raw_json, '$.seasons')) AS season_data  
+	WHERE JSON_EXTRACT_SCALAR(season_data, '$.id') IS NOT NULL
 )
 
 SELECT
