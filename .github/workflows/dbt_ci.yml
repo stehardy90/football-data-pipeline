@@ -63,77 +63,33 @@ jobs:
         dbt test
       working-directory: ./src/transform  
       
-  docker_and_airflow_test:
+  ingest_test:
     runs-on: ubuntu-latest
 
+    env:
+      API_KEY: ${{ secrets.API_KEY }}
+      GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+      BIGQUERY_DATASET: ${{ vars.BIGQUERY_DATASET }}
+      DOCKER_GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.DOCKER_GOOGLE_APPLICATION_CREDENTIALS }}
+      COMPETITION_IDS: ${{ vars.COMPETITION_IDS }}
+      API_RESOURCES: ${{ vars.API_RESOURCES }}
+
     steps:
-    - name: Check out repository
-      uses: actions/checkout@v2
-      
-    - name: Install Docker Compose
-      run: |
-        sudo apt-get update
-        sudo apt-get install docker-compose -y
-        
-    - name: Set up Google Cloud Credentials
-      run: |
-        export DOCKER_GOOGLE_APPLICATION_CREDENTIALS="/tmp/gcp_credentials.json"
-        export LOCAL_GOOGLE_APPLICATION_CREDENTIALS="/tmp/gcp_credentials.json"
-        
-    - name: Create empty .env file
-      run: |
-        touch docker/.env  # Create an empty .env file in the correct path
-        
-    - name: Create local logs directory
-      run: |
-        mkdir -p ../src/dags/logs  # Ensure the logs directory exists on the host
-        chmod -R 755 ../src/dags/logs  # Ensure proper permissions
-        
-    - name: Run Docker Compose
-      env:
-        DOCKER_GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp_credentials.json
-        LOCAL_GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp_credentials.json
-      working-directory: ./docker
-      run: |
-        docker-compose up --build -d
-        docker-compose ps  # Ensure the containers are in a healthy state
-        
-    - name: Fix permissions for logs directory inside Airflow container
-      run: |
-        container_id=$(docker ps -q --filter "name=airflow-webserver")
-        if [ -n "$container_id" ]; then
-          docker exec $container_id chmod -R 777 /opt/airflow/logs  # Full write access for all users
-        else
-          echo "Airflow Webserver container not found!"
-          exit 1
-        fi
-        
-    - name: Print Docker Compose Logs (Capture Errors Early)
-      working-directory: ./docker
-      run: |
-        docker-compose logs airflow-webserver || echo "Error retrieving webserver logs"
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Tail Airflow Webserver Logs
-      run: |
-        container_id=$(docker ps -q --filter "name=airflow-webserver")
-        if [ -n "$container_id" ]; then
-          echo "Tailing logs for container ID: $container_id"
-          docker logs --tail 50 --follow $container_id
-        else
-          echo "Airflow Webserver container not found! Logs could not be retrieved."
-        fi
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
 
-    - name: Check Airflow Health Endpoint
-      run: |
-        container_id=$(docker ps -q --filter "name=airflow-webserver")
-        if [ -n "$container_id" ]; then
-          echo "Checking Airflow health..."
-          curl --fail http://localhost:8080/health || (echo "Airflow health check failed" && exit 1)
-        else
-          echo "Airflow Webserver container not found for health check."
-          exit 1
-        fi
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-
+      - name: Run tests
+        run: |
+          pytest --maxfail=1 --disable-warnings
 
 

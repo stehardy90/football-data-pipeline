@@ -72,7 +72,7 @@ def run_dbt_test_and_log_results(task_instance, dbt_command):
 
     # Log both stdout and stderr to Airflow logs
     print("dbt test output (stdout):")
-    print(stdout_str)  # This will print the test results in Airflow logs
+    print(stdout_str)  # Print the test results in Airflow logs
 
     print("dbt test errors (stderr):")
     print(stderr_str)  # Log any errors from dbt test in Airflow logs
@@ -117,7 +117,7 @@ def run_dbt_test_and_log_results(task_instance, dbt_command):
 # Define default arguments
 default_args = {
     'owner': 'Ste Hardy',
-    'retries': 1, # change back to 3
+    'retries': 1, 
     'retry_delay': timedelta(minutes=1)
 }
 
@@ -128,7 +128,7 @@ with DAG(
     default_args=default_args,
     description='Orchestrate dbt models with Airflow',
     schedule_interval='@daily',
-    start_date=datetime(2023, 1, 1),  # Adjusted to a fixed date
+    start_date=datetime(2023, 1, 1),  
     catchup=False,
 ) as dag:
 

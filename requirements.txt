@@ -1,4 +1,5 @@
 pytest
 requests
-google-cloud-bigquery
 python-dotenv
+google-cloud-bigquery
+google-auth
