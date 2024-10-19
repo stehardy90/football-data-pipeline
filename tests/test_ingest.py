@@ -2,7 +2,7 @@ import os
 import pytest
 from unittest.mock import patch, MagicMock
 from google.cloud import bigquery
-from ingest.competition_data_ingest import fetch_and_store, create_table_if_not_exists, build_url_and_table
+from ingest.competition_data_ingest import fetch_and_store, create_table_if_not_exists
 import sys
 
 @pytest.fixture
@@ -33,13 +33,9 @@ def test_create_table_if_not_exists(mock_credentials, mock_bigquery_client, mock
     # Mock credentials to prevent any real credential issues
     mock_credentials.from_service_account_file.return_value = MagicMock()
 
-    # Create a mock schema if required by the create_table method
-    mock_table = MagicMock()
-    mock_table.schema = [
-        bigquery.SchemaField("endpoint", "STRING"),
-        bigquery.SchemaField("raw_json", "STRING"),
-        bigquery.SchemaField("loaded_date", "TIMESTAMP")
-    ]
+    # Create a mock bigquery Table object if create_table expects it
+    mock_table = bigquery.Table(table_id="test_project_id.test_dataset.raw_table")
+    mock_instance.create_table.return_value = mock_table
     
     # Add debugging to capture the instance type issues
     print("Attempting to create the table...", file=sys.stderr, flush=True)
