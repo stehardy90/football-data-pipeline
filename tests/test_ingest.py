@@ -1,6 +1,6 @@
 import os
 import pytest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from ingest.competition_data_ingest import fetch_and_store, create_table_if_not_exists, build_url_and_table
 
 @pytest.fixture
@@ -17,7 +17,12 @@ def mock_env(monkeypatch):
 def test_create_table_if_not_exists(mock_bigquery_client, mock_env):
     # Mock instance of bigquery.Client
     mock_instance = mock_bigquery_client.return_value
+    
+    # Mock get_table to raise an exception to simulate "table not found"
     mock_instance.get_table.side_effect = Exception("Table not found.")
+    
+    # Mock create_table to prevent real API calls
+    mock_instance.create_table = MagicMock()
     
     # Call the function
     create_table_if_not_exists("test_project_id.test_dataset.raw_table")
@@ -25,7 +30,7 @@ def test_create_table_if_not_exists(mock_bigquery_client, mock_env):
     # Assert that create_table was called after the table was not found
     mock_instance.create_table.assert_called()
 
-# Mock requests.get
+# Mock requests.get for the fetch_and_store function
 @patch('ingest.competition_data_ingest.requests.get')
 def test_fetch_and_store(mock_get, mock_env):
     # Mock the API response
