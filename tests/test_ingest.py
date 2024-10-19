@@ -2,6 +2,7 @@ import os
 import pytest
 from unittest.mock import patch, MagicMock
 from ingest.competition_data_ingest import fetch_and_store, create_table_if_not_exists, build_url_and_table
+import sys
 
 @pytest.fixture
 def mock_env(monkeypatch):
@@ -18,31 +19,31 @@ def mock_env(monkeypatch):
 def test_create_table_if_not_exists(mock_credentials, mock_bigquery_client, mock_env):
     # Mock instance of bigquery.Client
     mock_instance = mock_bigquery_client.return_value
-    
-    # Debugging statement
-    print("Mocking bigquery.Client...")
+
+    # Force the output to be flushed
+    print("Mocking bigquery.Client...", file=sys.stderr, flush=True)
 
     # Mock get_table to raise an exception to simulate "table not found"
     mock_instance.get_table.side_effect = Exception("Table not found.")
     
     # Mock create_table to prevent real API calls
     mock_instance.create_table = MagicMock()
-    
+
     # Mock credentials to prevent any real credential issues
     mock_credentials.from_service_account_file.return_value = MagicMock()
 
     # Add debugging to capture the instance type issues
-    print("Attempting to create the table...")
+    print("Attempting to create the table...", file=sys.stderr, flush=True)
     
     # Call the function
     try:
         create_table_if_not_exists("test_project_id.test_dataset.raw_table")
     except Exception as e:
         # Print the exception to better understand the flow
-        print(f"Exception during create_table_if_not_exists: {e}")
+        print(f"Exception during create_table_if_not_exists: {e}", file=sys.stderr, flush=True)
     
     # Debugging statement to confirm the flow reached this point
-    print("Checking if create_table was called...")
+    print("Checking if create_table was called...", file=sys.stderr, flush=True)
 
     # Assert that create_table was called after the table was not found
     mock_instance.create_table.assert_called()
