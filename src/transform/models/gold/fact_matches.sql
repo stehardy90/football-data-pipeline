@@ -1,7 +1,7 @@
 {{
   config(
-    materialized='incremental',  -- This sets the model to incremental
-    unique_key='match_id'  -- Ensure match_id is the unique key for incremental updates
+    materialized='incremental',  
+    unique_key='match_id'  
   )
 }}
 
