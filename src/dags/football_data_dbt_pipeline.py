@@ -7,6 +7,7 @@ from google.cloud import bigquery
 import time
 import subprocess
 import re
+import urllib.parse
 
 def log_etl_run(task_instance, status, row_count=0, error_message=None, test_passes=0, test_failures=0, total_tests=0, test_summary=""):
     client = bigquery.Client()
@@ -38,17 +39,36 @@ def log_etl_run(task_instance, status, row_count=0, error_message=None, test_pas
         print(f"Failed to log ETL run: {errors}")
         
 def slack_alert(context):
-    task_id = context['task_instance'].task_id
-    error_message = str(context.get('exception', 'Unknown error'))
-    timestamp = context.get('ts', 'N/A')  # Use 'N/A' if 'ts' is missing
-    print(f"Slack alert triggered for task {task_id}. Error: {error_message}")
+    try:
+        task_id = context['task_instance'].task_id
+        dag_id = context['task_instance'].dag_id
+        error_message = str(context.get('exception', 'Unknown error'))
+        timestamp = context.get('ts', 'N/A')
+        execution_date = context['execution_date'].isoformat()
+        encoded_execution_date = urllib.parse.quote(execution_date)  # Encode the execution date
+        
+        # Construct log URL
+        log_url = (f"http://localhost:8080/log?dag_id={dag_id}&task_id={task_id}"
+                   f"&execution_date={encoded_execution_date}&map_index=-1")
+        
+        # Construct Slack message
+        message = (f"❗️ Task *{task_id}* in DAG *{dag_id}* failed at {timestamp}.\n"
+                   f"🔍 *Error*: {error_message}\n"
+                   f"🔗 <{log_url}|View Logs>")
+        
+        print(f"Slack alert triggered for task {task_id}. Error: {error_message}")
+        
+        # Send Slack alert
+        alert = SlackWebhookOperator(
+            task_id='slack_alert',
+            slack_webhook_conn_id='slack_webhook',
+            message=message
+        )
+        return alert.execute(context=context)
     
-    alert = SlackWebhookOperator(
-        task_id='slack_alert',
-        slack_webhook_conn_id='slack_webhook',
-        message=f"Task {task_id} failed at {timestamp}. Error: {error_message}"
-    )
-    return alert.execute(context=context)
+    except Exception as e:
+        print(f"Failed to send Slack alert: {str(e)}")
+
 
 def failure_callback_with_slack(context):
     # Log the failure in BigQuery
@@ -117,7 +137,7 @@ def run_dbt_test_and_log_results(task_instance, dbt_command):
 # Define default arguments
 default_args = {
     'owner': 'Ste Hardy',
-    'retries': 1, 
+    'retries': 0, 
     'retry_delay': timedelta(minutes=1)
 }
 
