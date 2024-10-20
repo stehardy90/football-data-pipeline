@@ -44,6 +44,7 @@ def slack_alert(context):
         dag_id = context['task_instance'].dag_id
         error_message = str(context.get('exception', 'Unknown error'))
         timestamp = context.get('ts', 'N/A')
+        formatted_timestamp = datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%f%z').strftime('%Y-%m-%d %H:%M')
         execution_date = context['execution_date'].isoformat()
         encoded_execution_date = urllib.parse.quote(execution_date)  # Encode the execution date
         
@@ -52,7 +53,7 @@ def slack_alert(context):
                    f"&execution_date={encoded_execution_date}&map_index=-1")
         
         # Construct Slack message
-        message = (f"❗️ Task *{task_id}* in DAG *{dag_id}* failed at {timestamp}.\n"
+        message = (f"❗️ Task *{task_id}* in DAG *{dag_id}* failed at {formatted_timestamp}.\n"
                    f"🔍 *Error*: {error_message}\n"
                    f"🔗 <{log_url}|View Logs>")
         
@@ -155,7 +156,8 @@ with DAG(
     # Task: Competition data ingest
     competition_data_ingest = BashOperator(
         task_id='competition_data_ingest',
-        bash_command='python /opt/airflow/src/ingest/competition_data_ingest.py',
+#        bash_command='python /opt/airflow/src/ingest/competition_data_ingest.py',
+         bash_command='echo "Simulating error with exit code test" && exit does this still work',
     on_success_callback=lambda context: log_etl_run(
         context['task_instance'], 
         status='success'
