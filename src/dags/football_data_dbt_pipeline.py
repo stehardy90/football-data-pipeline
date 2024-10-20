@@ -156,8 +156,7 @@ with DAG(
     # Task: Competition data ingest
     competition_data_ingest = BashOperator(
         task_id='competition_data_ingest',
-#        bash_command='python /opt/airflow/src/ingest/competition_data_ingest.py',
-         bash_command='echo "Simulating error with exit code test" && exit does this still work',
+        bash_command='python /opt/airflow/src/ingest/competition_data_ingest.py',
     on_success_callback=lambda context: log_etl_run(
         context['task_instance'], 
         status='success'
