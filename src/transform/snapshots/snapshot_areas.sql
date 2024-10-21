@@ -6,7 +6,7 @@
       target_schema='football_data_snapshot',
       unique_key='area_code',
       strategy='check',
-      check_cols=['area_name', 'area_flag'] 
+      check_cols=['area_name', 'area_flag']  
     )
   }}
 

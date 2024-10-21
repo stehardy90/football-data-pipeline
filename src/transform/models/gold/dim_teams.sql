@@ -15,12 +15,6 @@ WITH snapshot_data AS (
         t.team_founded_year,
         t.team_colours,
         t.team_venue,
-		c.coach_id,
-		c.coach_name,
-		c.coach_date_of_birth,
-		c.coach_nationality,
-		c.coach_contract_start,
-		c.coach_contract_until,
         t.dbt_valid_from AS valid_from,
         IFNULL(t.dbt_valid_to, '2099-12-31') AS valid_to,
         t.dbt_updated_at AS loaded_date,  
@@ -31,9 +25,6 @@ WITH snapshot_data AS (
         END AS current_flag  
     FROM
         {{ ref('snp_teams') }} t
-	LEFT JOIN {{ ref('snp_coaches') }} c
-	ON c.team_id = t.team_id
-    AND t.dbt_valid_from between c.dbt_valid_from and ifnull(c.dbt_valid_to,'2099-12-31')  
 )
 
 SELECT *

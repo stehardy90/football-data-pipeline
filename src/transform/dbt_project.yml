@@ -39,3 +39,4 @@ snapshots:
   football_data_pipeline:
     +schema: "snapshot"  # The schema where snapshot tables will be stored
     +database: "{{ env_var('GCP_PROJECT_ID', 'default_project') }}"  # The BigQuery project ID
+    +invalidate_hard_deletes: true

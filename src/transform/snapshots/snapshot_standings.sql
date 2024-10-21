@@ -6,8 +6,8 @@
       target_schema='football_data_snapshot',
       unique_key='composite_unique_key',
       strategy='check',
-      check_cols=['team_id', 'played_games', 'won', 'draw', 'lost', 'points', 'goals_for', 'goals_against', 'goal_difference', 'competition_id', 'season_id'] 
-    )
+      check_cols=['team_id', 'played_games', 'won', 'draw', 'lost', 'points', 'goals_for', 'goals_against', 'goal_difference', 'competition_id', 'season_id']
+	)
   }}
 
   SELECT *,

@@ -18,7 +18,7 @@ WITH raw_coaches AS (
             ELSE '9999-12-31'
         END AS coach_contract_until,
 
-        ROW_NUMBER() OVER (PARTITION BY JSON_EXTRACT_SCALAR(coach_data, '$.id') ORDER BY loaded_date DESC) AS row_num
+        ROW_NUMBER() OVER (PARTITION BY JSON_EXTRACT_SCALAR(team_data, '$.id') ORDER BY loaded_date DESC) AS row_num
     FROM `{{ var('bigquery_dataset') }}.raw_football_teams`,
     UNNEST(JSON_EXTRACT_ARRAY(raw_json, '$.teams')) AS team_data,  -- Unnest the teams array first
     UNNEST([JSON_EXTRACT(team_data, '$.coach')]) AS coach_data  -- Extract the coach field from each team
@@ -36,3 +36,4 @@ SELECT
     CURRENT_TIMESTAMP() AS loaded_date
 FROM raw_coaches
 WHERE row_num = 1
+AND coach_id is not null
