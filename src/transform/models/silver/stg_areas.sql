@@ -1,5 +1,7 @@
 WITH raw_competitions AS (
+
 	SELECT * FROM {{ source('football_data_pipeline','raw_football_competitions') }}
+	
 )
 
 ,areas_stage AS (
@@ -9,8 +11,10 @@ WITH raw_competitions AS (
         JSON_EXTRACT_SCALAR(raw_json, '$.area.name') AS area_name,
         JSON_EXTRACT_SCALAR(raw_json, '$.area.flag') AS area_flag,
         ROW_NUMBER() OVER (PARTITION BY JSON_EXTRACT_SCALAR(raw_json, '$.area.code') ORDER BY loaded_date DESC) AS row_num
-    FROM 
+    
+	FROM 
 		raw_competitions
+	
 	WHERE 
 		JSON_EXTRACT_SCALAR(raw_json, '$.area.code') IS NOT NULL
 		
@@ -23,8 +27,10 @@ WITH raw_competitions AS (
 		area_name,
 		area_flag,
 		CURRENT_TIMESTAMP() AS loaded_date
+	
 	FROM 
 		areas_stage
+	
 	WHERE 
 		row_num = 1
 
