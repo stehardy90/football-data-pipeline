@@ -19,9 +19,9 @@ clean-targets:
   - "dbt_packages"
   
 # Defining variables for BigQuery configurations, using environment variables for flexibility
-vars:
-  bigquery_dataset: "{{ env_var('BIGQUERY_DATASET', 'default_dataset') }}"  
-  gcp_project_id: "{{ env_var('GCP_PROJECT_ID', 'default_project') }}"  
+#vars:
+#  bigquery_dataset: "{{ env_var('BIGQUERY_DATASET', 'default_dataset') }}"  
+#  gcp_project_id: "{{ env_var('GCP_PROJECT_ID', 'default_project') }}"  
 
 # Model configurations for different layers
 models:
