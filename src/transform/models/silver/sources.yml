@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: football_data_pipeline  
+    database: "{{ env_var('GCP_PROJECT_ID', 'default_project') }}"  
+    schema: "{{ env_var('BIGQUERY_DATASET', 'default_dataset') }}"  
+    tables:
+      - name: raw_football_competitions
+      - name: raw_football_matches
+      - name: raw_football_scorers
+      - name: raw_football_standings
+      - name: raw_football_teams
