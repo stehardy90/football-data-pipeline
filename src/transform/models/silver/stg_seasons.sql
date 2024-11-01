@@ -1,6 +1,6 @@
 WITH raw_competitions AS (
 
-	SELECT * FROM {{ source('football_data_pipeline','raw_football_competitions`') }}
+	SELECT * FROM {{ source('football_data_pipeline','raw_football_competitions') }}
 	
 )
 
