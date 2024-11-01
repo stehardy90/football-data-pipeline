@@ -3,7 +3,14 @@
     unique_key = 'dbt_scd_id' 
 ) }}
 
-WITH snapshot_data AS (
+WITH coaches_snapshot AS (
+
+	SELECT * FROM {{ ref('snp_coaches') }}
+
+)
+
+,final AS (
+
     SELECT
         c.coach_id,
         c.team_id,
@@ -22,21 +29,22 @@ WITH snapshot_data AS (
             WHEN IFNULL(c.dbt_valid_to, '2099-12-31') = '2099-12-31' THEN 1
             ELSE 0
         END AS current_flag  
-    FROM
-        {{ ref('snp_coaches') }} c
+   
+   FROM
+        coaches_snapshot c
+		
 )
 
-SELECT *
-FROM snapshot_data
+SELECT * FROM final
 
 {% if is_incremental() %}
 
 WHERE NOT EXISTS (
     SELECT 1
     FROM {{ this }} t
-    WHERE snapshot_data.dbt_scd_id = t.dbt_scd_id
-    AND COALESCE(snapshot_data.valid_from, '1900-01-01') = COALESCE(t.valid_from, '1900-01-01')
-    AND COALESCE(snapshot_data.valid_to, '2099-12-31') = COALESCE(t.valid_to, '2099-12-31')
+    WHERE final.dbt_scd_id = t.dbt_scd_id
+    AND COALESCE(final.valid_from, '1900-01-01') = COALESCE(t.valid_from, '1900-01-01')
+    AND COALESCE(final.valid_to, '2099-12-31') = COALESCE(t.valid_to, '2099-12-31')
 )
 
 {% endif %}

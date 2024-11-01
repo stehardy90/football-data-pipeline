@@ -3,8 +3,22 @@
     unique_key = 'match_id'
 ) }}
 
-WITH snapshot_data AS (
-    SELECT
+WITH matches_snapshot AS (
+
+	SELECT * FROM {{ ref('snp_matches') }}
+
+)
+
+,referees_snapshot AS (
+
+	SELECT * FROM {{ ref('snp_referees') }}
+
+)
+
+
+,final AS (
+    
+	SELECT
         m.match_id,
         m.home_team_id,
         m.away_team_id,
@@ -20,23 +34,26 @@ WITH snapshot_data AS (
 		r.referee_name,
 		r.referee_nationality,
         CURRENT_TIMESTAMP() AS loaded_date  
-    FROM 
-        {{ ref('stg_matches') }} m
-	LEFT JOIN {{ ref('snp_referees') }} r
+    
+	FROM 
+        matches_snapshot m
+	
+	LEFT JOIN referees_snapshot r
 	ON r.referee_id = m.referee_id
 	and r.dbt_valid_to is null
+	
 )
 
-SELECT *
-FROM snapshot_data
+SELECT * FROM final
+
 
 {% if is_incremental() %}
 
 WHERE NOT EXISTS (
     SELECT 1
     FROM {{ this }} t
-    WHERE snapshot_data.match_id = t.match_id
-    AND COALESCE(snapshot_data.match_status, '') = COALESCE(t.match_status, '')  
+    WHERE final.match_id = t.match_id
+    AND COALESCE(final.match_status, '') = COALESCE(t.match_status, '')  
 )
 
 {% endif %}

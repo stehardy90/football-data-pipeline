@@ -3,8 +3,22 @@
     unique_key = 'dbt_scd_id'  
 ) }}
 
-WITH snapshot_data AS (
-    SELECT
+WITH competitions_snapshot AS (
+
+	SELECT * FROM {{ ref('snp_competitions') }}
+
+)
+
+,areas_snapshot AS (
+
+	SELECT * FROM {{ ref('snp_areas') }}
+
+)
+
+
+,final AS (
+    
+	SELECT
         c.competition_id,
         c.competition_name,
         c.competition_code,
@@ -21,25 +35,29 @@ WITH snapshot_data AS (
             WHEN IFNULL(c.dbt_valid_to, '2099-12-31') = '2099-12-31' THEN 1
             ELSE 0
         END AS current_flag 
-    FROM
-        {{ ref('snp_competitions') }} c
-    JOIN  
-        {{ ref('snp_areas') }} a
+    
+	FROM
+        competitions_snapshot c
+    
+	JOIN  
+        areas_snapshot a
         ON c.area_code = a.area_code
         AND a.dbt_valid_to is null 
+		
 )
 
-SELECT *
-FROM snapshot_data
+
+
+SELECT * FROM final
 
 {% if is_incremental() %}
 
 WHERE NOT EXISTS (
     SELECT 1
     FROM {{ this }} t
-    WHERE snapshot_data.dbt_scd_id = t.dbt_scd_id
-    AND COALESCE(snapshot_data.valid_from, '1900-01-01') = COALESCE(t.valid_from, '1900-01-01')
-    AND COALESCE(snapshot_data.valid_to, '2099-12-31') = COALESCE(t.valid_to, '2099-12-31')
+    WHERE final.dbt_scd_id = t.dbt_scd_id
+    AND COALESCE(final.valid_from, '1900-01-01') = COALESCE(t.valid_from, '1900-01-01')
+    AND COALESCE(final.valid_to, '2099-12-31') = COALESCE(t.valid_to, '2099-12-31')
 )
 
 {% endif %}

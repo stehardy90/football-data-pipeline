@@ -3,7 +3,33 @@
     unique_key = 'dbt_scd_id'  
 ) }}
 
-WITH snapshot_data AS (
+
+WITH scorers_snapshot AS (
+
+	SELECT * FROM {{ ref('snp_scorers') }}
+
+)
+
+,players_snapshot AS (
+
+	SELECT * FROM {{ ref('dim_players') }}
+
+)
+
+,teams_snapshot AS (
+
+	SELECT * FROM {{ ref('dim_teams') }}
+
+)
+
+,competitions_snapshot AS (
+
+	SELECT * FROM {{ ref('dim_competitions') }}
+
+)
+
+
+,final AS (
     SELECT
         s.player_id,
 		p.player_name,
@@ -26,32 +52,32 @@ WITH snapshot_data AS (
             ELSE 0
         END AS current_flag  
     FROM
-        {{ ref('snp_scorers') }} s
+        scorers_snapshot s
 		
-		LEFT JOIN {{ ref('dim_players') }} p
+		LEFT JOIN players_snapshot p
 		ON s.player_id = p.player_id
 		AND p.valid_to = '2099-12-31'
 		
-		LEFT JOIN {{ ref('dim_teams') }} t
+		LEFT JOIN teams_snapshot t
 		ON s.team_id = t.team_id
 		AND t.valid_to = '2099-12-31'
 		
-		LEFT JOIN {{ ref('dim_competitions') }} c
+		LEFT JOIN competitions_snapshot c
 		ON s.competition_id = c.competition_id
 		AND c.valid_to = '2099-12-31'
+		
 )
 
-SELECT *
-FROM snapshot_data
+SELECT * FROM final
 
 {% if is_incremental() %}
 
 WHERE NOT EXISTS (
     SELECT 1
     FROM {{ this }} t
-    WHERE snapshot_data.dbt_scd_id = t.dbt_scd_id
-    AND COALESCE(snapshot_data.valid_from, '1900-01-01') = COALESCE(t.valid_from, '1900-01-01')
-    AND COALESCE(snapshot_data.valid_to, '2099-12-31') = COALESCE(t.valid_to, '2099-12-31')
+    WHERE final.dbt_scd_id = t.dbt_scd_id
+    AND COALESCE(final.valid_from, '1900-01-01') = COALESCE(t.valid_from, '1900-01-01')
+    AND COALESCE(final.valid_to, '2099-12-31') = COALESCE(t.valid_to, '2099-12-31')
 )
 
 {% endif %}
