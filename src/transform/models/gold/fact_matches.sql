@@ -3,9 +3,9 @@
     unique_key = 'match_id'
 ) }}
 
-WITH matches_snapshot AS (
+WITH matches_stage AS (
 
-	SELECT * FROM {{ ref('snp_matches') }}
+	SELECT * FROM {{ ref('stg_matches') }}
 
 )
 
@@ -36,7 +36,7 @@ WITH matches_snapshot AS (
         CURRENT_TIMESTAMP() AS loaded_date  
     
 	FROM 
-        matches_snapshot m
+        matches_stage m
 	
 	LEFT JOIN referees_snapshot r
 	ON r.referee_id = m.referee_id
