@@ -1,6 +1,6 @@
 # Naming the project
 name: 'football_data_pipeline'
-version: 2
+version: '1.0.0'
 
 # Specifying the profile
 profile: 'football_data_pipeline'

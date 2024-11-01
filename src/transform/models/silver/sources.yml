@@ -1,4 +1,4 @@
-version: 2
+version: '1.0.0'
 
 sources:
   - name: football_data_pipeline  
