@@ -1,5 +1,12 @@
-WITH standings_staging AS (
-    SELECT
+WITH raw_standings AS (
+
+	SELECT * FROM {{ source('football_data_pipeline','raw_football_standings') }}
+	
+)
+
+WITH standings_stage AS (
+    
+	SELECT
         CAST(JSON_EXTRACT_SCALAR(team_data, '$.team.id') AS INT64) AS team_id,
         CAST(JSON_EXTRACT_SCALAR(team_data, '$.position') AS INT64) AS league_position,
         CAST(JSON_EXTRACT_SCALAR(team_data, '$.playedGames') AS INT64) AS played_games,
@@ -13,25 +20,38 @@ WITH standings_staging AS (
         CAST(JSON_EXTRACT_SCALAR(raw_json, '$.competition.id') AS INT64) AS competition_id,
         CAST(JSON_EXTRACT_SCALAR(raw_json, '$.season.id') AS INT64) AS season_id,
         ROW_NUMBER() OVER (PARTITION BY JSON_EXTRACT_SCALAR(team_data, '$.team.id') ORDER BY loaded_date DESC) AS row_num
-    FROM `{{ var('bigquery_dataset') }}.raw_football_standings`,
+    
+	FROM 
+		raw_standings,
     UNNEST(JSON_EXTRACT_ARRAY(raw_json, '$.standings')) AS standing_data,  -- Unnest standings
     UNNEST(JSON_EXTRACT_ARRAY(standing_data, '$.table')) AS team_data  -- Unnest table inside standings
-	WHERE JSON_EXTRACT_SCALAR(team_data, '$.team.id') IS NOT NULL
+	
+	WHERE 
+		JSON_EXTRACT_SCALAR(team_data, '$.team.id') IS NOT NULL
+		
 )
 
-SELECT
-    team_id,
-    league_position,
-    played_games,
-    won,
-    draw,
-    lost,
-    points,
-    goals_for,
-    goals_against,
-    goal_difference,
-    competition_id,
-    season_id,
-    CURRENT_TIMESTAMP() AS loaded_date
-FROM standings_staging
-WHERE row_num = 1
+,final as (
+
+	SELECT
+		team_id,
+		league_position,
+		played_games,
+		won,
+		draw,
+		lost,
+		points,
+		goals_for,
+		goals_against,
+		goal_difference,
+		competition_id,
+		season_id,
+		CURRENT_TIMESTAMP() AS loaded_date
+	FROM 
+		standings_staging
+	WHERE 
+		row_num = 1
+
+)
+
+SELECT * FROM final

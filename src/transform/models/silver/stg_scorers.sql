@@ -1,5 +1,13 @@
 WITH raw_scorers AS (
-    SELECT
+
+	SELECT * FROM {{ source('football_data_pipeline','raw_football_scorers`') }}
+	
+)
+
+
+,scorers_stage AS (
+    
+	SELECT
         CAST(JSON_EXTRACT_SCALAR(scorer_data, '$.player.id') AS INT64) AS player_id,
         CAST(JSON_EXTRACT_SCALAR(scorer_data, '$.team.id') AS INT64) AS team_id,
         CAST(JSON_EXTRACT_SCALAR(scorer_data, '$.playedMatches') AS INT64) AS played_matches,
@@ -17,21 +25,34 @@ WITH raw_scorers AS (
                 JSON_EXTRACT_SCALAR(raw_json, '$.season.id')
             ORDER BY loaded_date DESC
         ) AS row_num
-    FROM `{{ var('bigquery_dataset') }}.raw_football_scorers`,
-    UNNEST(JSON_EXTRACT_ARRAY(raw_json, '$.scorers')) AS scorer_data 
-	WHERE JSON_EXTRACT_SCALAR(scorer_data, '$.player.id') IS NOT NULL
+    
+	FROM 
+		raw_scorers,
+		UNNEST(JSON_EXTRACT_ARRAY(raw_json, '$.scorers')) AS scorer_data 
+	
+	WHERE 
+		JSON_EXTRACT_SCALAR(scorer_data, '$.player.id') IS NOT NULL
+	
 )
 
-SELECT
-    player_id,
-    team_id,
-    played_matches,
-    goals,
-    assists,
-    penalties,
-    competition_id,
-    season_id,
-    current_matchday,
-    CURRENT_TIMESTAMP() AS loaded_date
-FROM raw_scorers
-WHERE row_num = 1
+,final AS (
+
+	SELECT
+		player_id,
+		team_id,
+		played_matches,
+		goals,
+		assists,
+		penalties,
+		competition_id,
+		season_id,
+		current_matchday,
+		CURRENT_TIMESTAMP() AS loaded_date
+	FROM 
+		scorers_stage
+	WHERE 
+		row_num = 1
+
+)
+
+SELECT * FROM final

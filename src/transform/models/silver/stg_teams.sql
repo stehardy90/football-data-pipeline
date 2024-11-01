@@ -43,7 +43,7 @@ WITH raw_teams AS (
 		team_venue,
 		CURRENT_TIMESTAMP() AS loaded_date
 	FROM 
-		raw_teams
+		teams_stage
 	WHERE 
 		row_num = 1
 )

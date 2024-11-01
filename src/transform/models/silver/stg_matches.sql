@@ -6,7 +6,14 @@
 }}
 
 WITH raw_matches AS (
-    SELECT
+
+	SELECT * FROM {{ source('football_data_pipeline','raw_football_matches') }}
+	
+)
+
+,matches_stage AS (
+    
+	SELECT
         CAST(JSON_EXTRACT_SCALAR(match_data, '$.id') AS INT64) AS match_id,
         CAST(JSON_EXTRACT_SCALAR(match_data, '$.homeTeam.id') AS INT64) AS home_team_id,
         CAST(JSON_EXTRACT_SCALAR(match_data, '$.awayTeam.id') AS INT64) AS away_team_id,
@@ -20,29 +27,41 @@ WITH raw_matches AS (
         CAST(JSON_EXTRACT_SCALAR(match_data, '$.season.id') AS INT64) AS season_id,
         CAST(JSON_EXTRACT_SCALAR(ref_data, '$.id') AS INT64) AS referee_id,
         ROW_NUMBER() OVER (PARTITION BY JSON_EXTRACT_SCALAR(match_data, '$.id') ORDER BY loaded_date DESC) AS row_num
-    FROM `{{ var('bigquery_dataset') }}.raw_football_matches`,
-    UNNEST(JSON_EXTRACT_ARRAY(raw_json, '$.matches')) AS match_data,  
-    UNNEST(JSON_EXTRACT_ARRAY(match_data, '$.referees')) AS ref_data  
-	WHERE JSON_EXTRACT_SCALAR(match_data, '$.id') IS NOT NULL
+    FROM 
+		raw_matches,
+		UNNEST(JSON_EXTRACT_ARRAY(raw_json, '$.matches')) AS match_data,  
+		UNNEST(JSON_EXTRACT_ARRAY(match_data, '$.referees')) AS ref_data  
+	
+	WHERE 	
+		JSON_EXTRACT_SCALAR(match_data, '$.id') IS NOT NULL
 )
 
-SELECT
-    match_id,
-    home_team_id,
-    away_team_id,
-    score_home,
-    score_away,
-    half_time_home,
-    half_time_away,
-    match_status,
-    match_day,
-    competition_id,
-    season_id,
-    referee_id,
-    CURRENT_TIMESTAMP() AS loaded_date
-FROM raw_matches
-WHERE row_num = 1
+,final as (
+
+	SELECT
+		match_id,
+		home_team_id,
+		away_team_id,
+		score_home,
+		score_away,
+		half_time_home,
+		half_time_away,
+		match_status,
+		match_day,
+		competition_id,
+		season_id,
+		referee_id,
+		CURRENT_TIMESTAMP() AS loaded_date
+	FROM 
+		raw_matches
+	WHERE 
+		row_num = 1
+
+)
+
+SELECT * FROM final
 
 {% if is_incremental() %}
   AND match_day > (SELECT MAX(match_day) FROM {{ this }})
 {% endif %}
+
