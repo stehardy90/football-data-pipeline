@@ -1,6 +1,6 @@
 WITH raw_scorers AS (
 
-	SELECT * FROM {{ source('football_data_pipeline','raw_football_scorers`') }}
+	SELECT * FROM {{ source('football_data_pipeline','raw_football_scorers') }}
 	
 )
 
