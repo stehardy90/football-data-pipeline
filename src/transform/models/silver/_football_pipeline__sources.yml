@@ -12,11 +12,11 @@ sources:
         description: raw competition data
         columns:
           - name: endpoint
-            description: API endpoint the data was ingested from
+            description: "{{ doc('endpoint') }}"
           - name: raw_json
-            description: raw json output from the API call 
+            description: "{{ doc('raw_json') }}"
           - name: loaded_date
-            description: date the data was ingested         
+            description: "{{ doc('loaded_date') }}"      
 
       - name: raw_football_matches
         description: raw match data
@@ -25,11 +25,11 @@ sources:
         loaded_at_field: loaded_date
         columns:
           - name: endpoint
-            description: API endpoint the data was ingested from
+            description: "{{ doc('endpoint') }}"
           - name: raw_json
-            description: raw json output from the API call 
+            description: "{{ doc('raw_json') }}"
           - name: loaded_date
-            description: date the data was ingested  
+            description: "{{ doc('loaded_date') }}"  
         
         
       - name: raw_football_scorers
@@ -39,11 +39,11 @@ sources:
         loaded_at_field: loaded_date
         columns:
           - name: endpoint
-            description: API endpoint the data was ingested from
+            description: "{{ doc('endpoint') }}"
           - name: raw_json
-            description: raw json output from the API call 
+            description: "{{ doc('raw_json') }}"
           - name: loaded_date
-            description: date the data was ingested  
+            description: "{{ doc('loaded_date') }}"  
             
         
       - name: raw_football_standings
@@ -53,19 +53,19 @@ sources:
         loaded_at_field: loaded_date
         columns:
           - name: endpoint
-            description: API endpoint the data was ingested from
+            description: "{{ doc('endpoint') }}"
           - name: raw_json
-            description: raw json output from the API call 
+            description: "{{ doc('raw_json') }}"
           - name: loaded_date
-            description: date the data was ingested  
+            description: "{{ doc('loaded_date') }}"  
             
         
       - name: raw_football_teams
         description: raw teams data      
         columns:
           - name: endpoint
-            description: API endpoint the data was ingested from
+            description: "{{ doc('endpoint') }}"
           - name: raw_json
-            description: raw json output from the API call 
+            description: "{{ doc('raw_json') }}"
           - name: loaded_date
-            description: date the data was ingested  
+            description: "{{ doc('loaded_date') }}"  
