@@ -6,18 +6,23 @@ models:
     description: "dim table for competitions"
     columns:
       - name: competition_id
+        description: primary key
         tests:
           - not_null
       - name: competition_code
+        description: code allocated to the competition
         tests:
           - not_null
       - name: competition_type
+        description: "{{ doc('competition_type') }}"
         tests:
           - not_null  
       - name: area_code
+        description: foreign key to area table
         tests:
           - not_null  
       - name: loaded_date
+        description: date the data was loaded
         tests:
           - not_null  
           
@@ -25,84 +30,95 @@ models:
     description: "dim table for dates"
     columns:
       - name: date
+        description: primary key
         tests:
           - not_null
           - unique 
       - name: year
+        description: year derived from the date
         tests:
           - not_null
       - name: month
+        description: month derived from the date
         tests:
           - not_null  
           - custom_accepted_values:
               values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]  # Pass integers
       - name: day_of_month
+        description: integer day of the month
         tests:
           - not_null  
       - name: week
+        description: integer week number
         tests:
           - not_null
       - name: day_of_week
+        description: integer day of week (1 - 7)
         tests:
           - not_null  
           - custom_accepted_values:
               values: [1, 2, 3, 4, 5, 6, 7]  # Pass integers
       - name: quarter
+        description: which quarter the date falls into (0 - 4)
         tests:
           - not_null  
           - custom_accepted_values:
               values: [1, 2, 3, 4]  # Pass integers
       - name: week_start_date
+        description: based on Monday week start date
         tests:
           - not_null  
       - name: month_start_date
+        description: first day of the month
         tests:
           - not_null     
       
 
   - name: dim_players
-    description: "Dimension table for players"
+    description: Dimension table for players
     columns:
       - name: player_id
-        description: "Unique ID for players"
+        description: Unique ID for players
         tests:
           - not_null
       - name: player_name
-        description: "Name of the player"
+        description: Name of the player
         tests:
           - not_null 
       - name: player_position
-        description: "Players main position"
+        description: Players main position
         tests:
           - not_null
       - name: player_nationality
-        description: "Players nationality"
+        description: Players nationality
         tests:
           - not_null          
       - name: team_id
-        description: "Team the player belongs to"
+        description: Team the player belongs to
         tests:
           - not_null
       - name: loaded_date
+        description: date the data was loaded
         tests:
           - not_null
       - name: player_date_of_birth
+        description: date the player was born, will be NULL for players under the age of 18
         tests: 
           - date_of_birth_more_than_10_years_ago  
 
   - name: dim_seasons
-    description: "Dimension table for seasons"
+    description: Dimension table for seasons
     columns:
       - name: season_id
-        description: "Unique ID for seasons"
+        description: Unique ID for seasons
         tests:
           - not_null
       - name: season_start_date
-        description: "Start date for the season"
+        description: Start date for the season
         tests:
           - not_null
       - name: season_end_date
-        description: "End date for the season"
+        description: End date for the season
         tests:
           - not_null
       - name: competition_id
@@ -117,19 +133,19 @@ models:
       - season_start_before_end
 
   - name: fact_matches
-    description: "Fact table for matches"
+    description: Fact table for matches
     columns:
       - name: match_id
-        description: "Unique ID for matches"
+        description: Unique ID for matches
         tests:
           - unique
           - not_null
       - name: home_team_id
-        description: "Home team ID"
+        description: Home team ID
         tests:
           - not_null
       - name: away_team_id
-        description: "Away team ID"
+        description: Away team ID
         tests:
           - not_null
       - name: score_home
@@ -151,7 +167,7 @@ models:
         tests:
           - not_null 
       - name: competition_id
-        description: "Competition the match belongs to"
+        description: Competition the match belongs to
         tests:
           - not_null
       - name: season_id
@@ -169,7 +185,7 @@ models:
       - half_time_score_valid
 
   - name: fact_standings
-    description: "Fact table for team standings"
+    description: Fact table for team standings
     columns:
       - name: team_id
         tests:
@@ -212,7 +228,7 @@ models:
       - goal_difference_and_points_valid
       
   - name: fact_scorers
-    description: "Fact table for scorers"
+    description: Fact table for scorers
     columns:
       - name: player_id
         tests:
