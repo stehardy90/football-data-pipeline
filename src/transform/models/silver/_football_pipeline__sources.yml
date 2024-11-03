@@ -2,27 +2,32 @@ version: '1.0.0'
 
 sources:
   - name: football_data_pipeline  
+    description: data ingested from football-data.org
     database: "{{ env_var('GCP_PROJECT_ID', 'default_project') }}"  
     schema: "{{ env_var('BIGQUERY_DATASET', 'default_dataset') }}"  
     
     
     tables:
       - name: raw_football_competitions
+        description: raw competition data
 
       - name: raw_football_matches
+        description: raw match data
         freshness:
             warn_after: {count: 1, period: day}
         loaded_at_field: loaded_date
         
       - name: raw_football_scorers
+        description: raw scorers data
         freshness:
             warn_after: {count: 1, period: day}
         loaded_at_field: loaded_date
         
       - name: raw_football_standings
+        description: raw standings data
         freshness:
             warn_after: {count: 1, period: day}
         loaded_at_field: loaded_date
         
       - name: raw_football_teams
-      
+        description: raw teams data      

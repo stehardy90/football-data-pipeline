@@ -3,7 +3,7 @@
 models:
       
   - name: dim_competitions
-    description: "dim table for competitions"
+    description: dim table for competitions
     columns:
       - name: competition_id
         description: primary key
