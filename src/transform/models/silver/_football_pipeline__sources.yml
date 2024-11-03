@@ -10,24 +10,62 @@ sources:
     tables:
       - name: raw_football_competitions
         description: raw competition data
+        columns:
+          - name: endpoint
+            description: API endpoint the data was ingested from
+          - name: raw_json
+            description: raw json output from the API call 
+          - name: loaded_date
+            description: date the data was ingested         
 
       - name: raw_football_matches
         description: raw match data
         freshness:
             warn_after: {count: 1, period: day}
         loaded_at_field: loaded_date
+        columns:
+          - name: endpoint
+            description: API endpoint the data was ingested from
+          - name: raw_json
+            description: raw json output from the API call 
+          - name: loaded_date
+            description: date the data was ingested  
+        
         
       - name: raw_football_scorers
         description: raw scorers data
         freshness:
             warn_after: {count: 1, period: day}
         loaded_at_field: loaded_date
+        columns:
+          - name: endpoint
+            description: API endpoint the data was ingested from
+          - name: raw_json
+            description: raw json output from the API call 
+          - name: loaded_date
+            description: date the data was ingested  
+            
         
       - name: raw_football_standings
         description: raw standings data
         freshness:
             warn_after: {count: 1, period: day}
         loaded_at_field: loaded_date
+        columns:
+          - name: endpoint
+            description: API endpoint the data was ingested from
+          - name: raw_json
+            description: raw json output from the API call 
+          - name: loaded_date
+            description: date the data was ingested  
+            
         
       - name: raw_football_teams
         description: raw teams data      
+        columns:
+          - name: endpoint
+            description: API endpoint the data was ingested from
+          - name: raw_json
+            description: raw json output from the API call 
+          - name: loaded_date
+            description: date the data was ingested  
