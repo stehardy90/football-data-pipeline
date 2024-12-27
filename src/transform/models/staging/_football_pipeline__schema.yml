@@ -1,0 +1,38 @@
+# Basic testing for staging tables to ensure all PKs are unique and not null
+version: 2
+
+models:
+  - name: stg_competitions
+    columns:
+      - name: competition_id
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_matches
+    columns:
+      - name: match_id
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_scorers
+    columns:
+      - name: player_id
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_standings
+    columns:
+      - name: team_id
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_teams
+    columns:
+      - name: team_id
+        tests:
+          - unique
+          - not_null

@@ -4,7 +4,7 @@ WITH raw_standings AS (
 	
 )
 
-WITH standings_stage AS (
+,standings_stage AS (
     
 	SELECT
         CAST(JSON_EXTRACT_SCALAR(team_data, '$.team.id') AS INT64) AS team_id,
@@ -48,7 +48,7 @@ WITH standings_stage AS (
 		season_id,
 		CURRENT_TIMESTAMP() AS loaded_date
 	FROM 
-		standings_staging
+		standings_stage
 	WHERE 
 		row_num = 1
 
