@@ -53,7 +53,7 @@ WITH raw_matches AS (
 		referee_id,
 		CURRENT_TIMESTAMP() AS loaded_date
 	FROM 
-		raw_matches
+		matches_stage
 	WHERE 
 		row_num = 1
 
