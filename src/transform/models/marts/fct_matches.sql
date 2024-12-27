@@ -8,7 +8,7 @@ WITH matches_stage AS (
 	SELECT * FROM {{ ref('stg_matches') }}
     
     {% if is_incremental() %}
-    AND loaded_date >= (SELECT MAX(loaded_date) FROM {{ this }})
+    WHERE loaded_date >= (SELECT MAX(loaded_date) FROM {{ this }})
     {% endif %} 
 
 )
