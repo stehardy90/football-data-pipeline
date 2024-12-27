@@ -27,3 +27,9 @@ Thumbs.db  # Windows-specific system file
 
 src/dags/logs/
 src/transform/logs/
+
+
+src/transform/models/archive/
+src/transform/models/gold\archive/
+src/transform/models/silver\archive/
+src/transform/snapshots/archive/

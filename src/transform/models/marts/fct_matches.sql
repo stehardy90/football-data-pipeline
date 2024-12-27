@@ -6,6 +6,10 @@
 WITH matches_stage AS (
 
 	SELECT * FROM {{ ref('stg_matches') }}
+    
+    {% if is_incremental() %}
+    AND loaded_date >= (SELECT MAX(loaded_date) FROM {{ this }})
+    {% endif %} 
 
 )
 
@@ -33,6 +37,7 @@ WITH matches_stage AS (
 
 )
 
+
 SELECT * FROM final
 
 
@@ -41,8 +46,9 @@ SELECT * FROM final
 WHERE NOT EXISTS (
     SELECT 1
     FROM {{ this }} t
-    WHERE final.match_id = t.match_id
-    AND COALESCE(final.match_status, '') = COALESCE(t.match_status, '')  
+    WHERE 
+        final.match_id = t.match_id AND
+        COALESCE(final.match_status, '') = COALESCE(t.match_status, '')  
 )
 
 {% endif %}
