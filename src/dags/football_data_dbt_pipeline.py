@@ -164,10 +164,10 @@ with DAG(
     on_failure_callback=failure_callback_with_slack
     )
 
-    # Task: Run dbt silver Models
-    run_dbt_silver = BashOperator(
-        task_id='run_dbt_silver',
-        bash_command='cd /opt/airflow/src/transform && /home/airflow/.local/bin/dbt run --models silver --exclude gold --profiles-dir /opt/airflow/config/dbt --no-partial-parse --debug',
+    # Task: Run dbt staging Models
+    run_dbt_staging = BashOperator(
+        task_id='run_dbt_staging',
+        bash_command='cd /opt/airflow/src/transform && /home/airflow/.local/bin/dbt run --models staging --exclude marts --profiles-dir /opt/airflow/config/dbt --no-partial-parse --debug',
     on_success_callback=lambda context: log_etl_run(
         context['task_instance'], 
         status='success'
@@ -175,11 +175,11 @@ with DAG(
     on_failure_callback=failure_callback_with_slack
     )
     
-    # Task: Run silver dbt Tests
-    run_silver_dbt_tests = PythonOperator(
-        task_id='run_silver_dbt_tests',
+    # Task: Run staging dbt Tests
+    run_staging_dbt_tests = PythonOperator(
+        task_id='run_staging_dbt_tests',
         python_callable=lambda task_instance: run_dbt_test_and_log_results(
-            task_instance, 'cd /opt/airflow/src/transform && /home/airflow/.local/bin/dbt test --models silver --exclude gold --profiles-dir /opt/airflow/config/dbt --no-partial-parse --debug'
+            task_instance, 'cd /opt/airflow/src/transform && /home/airflow/.local/bin/dbt test --models staging --exclude marts --profiles-dir /opt/airflow/config/dbt --no-partial-parse --debug'
         ),
         on_failure_callback=failure_callback_with_slack
     )
@@ -195,10 +195,10 @@ with DAG(
     on_failure_callback=failure_callback_with_slack
     )
 
-    # Task: Run dbt gold Models
-    run_dbt_gold = BashOperator(
-        task_id='run_dbt_gold',
-        bash_command='cd /opt/airflow/src/transform && /home/airflow/.local/bin/dbt run --models gold --profiles-dir /opt/airflow/config/dbt --no-partial-parse --debug',
+    # Task: Run dbt marts Models
+    run_dbt_marts = BashOperator(
+        task_id='run_dbt_marts',
+        bash_command='cd /opt/airflow/src/transform && /home/airflow/.local/bin/dbt run --models marts --profiles-dir /opt/airflow/config/dbt --no-partial-parse --debug',
     on_success_callback=lambda context: log_etl_run(
         context['task_instance'], 
         status='success'
@@ -206,14 +206,14 @@ with DAG(
     on_failure_callback=failure_callback_with_slack
     )
 
-    # Task: Run gold dbt Tests
-    run_gold_dbt_tests = PythonOperator(
-        task_id='run_gold_dbt_tests',
+    # Task: Run marts dbt Tests
+    run_marts_dbt_tests = PythonOperator(
+        task_id='run_marts_dbt_tests',
         python_callable=lambda task_instance: run_dbt_test_and_log_results(
-            task_instance, 'cd /opt/airflow/src/transform && /home/airflow/.local/bin/dbt test --models gold --profiles-dir /opt/airflow/config/dbt --no-partial-parse --debug'
+            task_instance, 'cd /opt/airflow/src/transform && /home/airflow/.local/bin/dbt test --models marts --profiles-dir /opt/airflow/config/dbt --no-partial-parse --debug'
         ),
         on_failure_callback=failure_callback_with_slack
     )
 
     # Define task dependencies
-    competition_data_ingest >> run_dbt_silver >> run_silver_dbt_tests >> run_dbt_snapshot >> run_dbt_gold >> run_gold_dbt_tests
+    competition_data_ingest >> run_dbt_staging >> run_staging_dbt_tests >> run_dbt_snapshot >> run_dbt_marts >> run_marts_dbt_tests

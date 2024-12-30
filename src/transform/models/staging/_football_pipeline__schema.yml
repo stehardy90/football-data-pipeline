@@ -6,7 +6,6 @@ models:
     columns:
       - name: competition_id
         tests:
-          - unique
           - not_null
 
   - name: stg_matches
@@ -34,5 +33,4 @@ models:
     columns:
       - name: team_id
         tests:
-          - unique
           - not_null

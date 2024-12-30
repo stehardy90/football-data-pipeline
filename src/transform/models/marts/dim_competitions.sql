@@ -6,6 +6,10 @@
 WITH competitions_snapshot AS (
 
 	SELECT * FROM {{ ref('snp_competitions') }}
+	
+	{% if is_incremental() %}
+    WHERE loaded_date >= (SELECT MAX(loaded_date) FROM {{ this }})
+    {% endif %} 
 
 )
 

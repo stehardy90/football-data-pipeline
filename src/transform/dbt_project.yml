@@ -22,13 +22,13 @@ clean-targets:
 models:
   football_data_pipeline:
     
-    silver:
-      +schema: "silver"  # Transform layer
+    staging:
+      +schema: "staging"  # Transform layer
       +materialized: table  
       
-    gold:
-      +schema: "gold"  # Aggregate & analytics layer
-      +materialized: table  
+    marts:
+      +schema: "marts"  # Aggregate & analytics layer
+      +materialized: view  
 
 snapshots:
   football_data_pipeline:

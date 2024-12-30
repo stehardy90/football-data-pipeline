@@ -1,11 +1,14 @@
 version: '1.0.0'
 
 sources:
-  - name: football_data_pipeline  
+  - name: football_data  
     description: data ingested from football-data.org
     database: "{{ env_var('GCP_PROJECT_ID', 'default_project') }}"  
     schema: "{{ env_var('BIGQUERY_DATASET', 'default_dataset') }}"  
-    
+    freshness: # schema level checks 
+      error_after: {count: 100, period: day}
+      warn_after: {count: 50, period: day}
+    loaded_at_field: loaded_date    
     
     tables:
       - name: raw_football_competitions
